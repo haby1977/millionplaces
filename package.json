@@ -1,0 +1,9 @@
+{
+  "name": "millionplaces",
+  "version": "1.0.0",
+  "description": "Million Places - Object Gallery",
+  "dependencies": {
+    "stripe": "^14.0.0",
+    "@supabase/supabase-js": "^2.39.0"
+  }
+}
