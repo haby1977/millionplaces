@@ -39,8 +39,9 @@ module.exports = async (req, res) => {
         },
       ],
       mode: 'payment',
-      success_url: `https://millionplaces-3ni7.vercel.app/success.html?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `https://millionplaces-3ni7.vercel.app/cancel.html`,
+      // VRAIES URLs avec 3ni7
+      success_url: `https://millionplaces-3ni7.vercel.app/?success=1&session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `https://millionplaces-3ni7.vercel.app/?cancel=1`,
       customer_email: email,
       metadata: {
         email,

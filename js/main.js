@@ -60,7 +60,7 @@ function toggleZoom() {
 }
 
 // ============================================
-// SHUFFLE + LOAD GALLERY (VIA PROXY)
+// SHUFFLE + LOAD GALLERY (DIRECT SUPABASE)
 // ============================================
 function shuffleArray(arr) {
   const a = [...arr]
@@ -73,17 +73,17 @@ function shuffleArray(arr) {
 
 async function loadGallery() {
   try {
-    const res = await fetch('/api/supabase/objets?select=*')
-    const objets = await res.json()
+    // APPEL DIRECT À SUPABASE - PAS DE PROXY
+    const { data: objets, error } = await supabase
+      .from('objets')
+      .select('*')
 
-    if (!objets || objets.error) {
-      throw new Error(objets?.error?.message || 'Erreur lors du chargement')
-    }
+    if (error) throw error
 
     const gallery = document.getElementById('gallery')
     gallery.innerHTML = ''
 
-    if (!objets.length) {
+    if (!objets || !objets.length) {
       gallery.innerHTML = '<div class="loading-text">No objects yet. Be the first!</div>'
       return
     }
@@ -218,7 +218,7 @@ function updatePriceDisplays(a) {
 }
 
 // ============================================
-// SUBMIT (VIA PROXY + STORAGE)
+// SUBMIT (DIRECT SUPABASE + STRIPE)
 // ============================================
 let isSubmitting = false
 document.getElementById('uploadForm')?.addEventListener('submit', async e => {
@@ -241,11 +241,18 @@ document.getElementById('uploadForm')?.addEventListener('submit', async e => {
   const price = parseFloat(document.getElementById('selectedPrice').value)
   if (price < 1) return showAlert('Min €1', 'ERROR'), resetBtn()
 
-  // Vérifier si l'email existe déjà (via proxy)
+  // Vérifier si l'email existe déjà (DIRECT SUPABASE)
   try {
-    const res = await fetch(`/api/supabase/objets?select=email&email=eq.${encodeURIComponent(email)}`)
-    const existing = await res.json()
-    if (existing?.length) return showAlert('Déjà participé !', 'ERROR'), resetBtn()
+    const { data: existing, error } = await supabase
+      .from('objets')
+      .select('email')
+      .eq('email', email)
+      .limit(1)
+    
+    if (error) throw error
+    if (existing && existing.length > 0) {
+      return showAlert('Déjà participé !', 'ERROR'), resetBtn()
+    }
   } catch (err) {
     console.error('Erreur vérification email:', err)
   }
@@ -286,6 +293,23 @@ document.getElementById('uploadForm')?.addEventListener('submit', async e => {
 })
 
 // ============================================
+// GESTION RETOUR PAIEMENT
+// ============================================
+function handlePaymentReturn() {
+  const urlParams = new URLSearchParams(window.location.search)
+  if (urlParams.get('success') === '1') {
+    showAlert('Paiement réussi ! Votre objet va apparaître.', 'SUCCESS')
+    // Nettoyer l'URL
+    window.history.replaceState({}, '', window.location.pathname)
+    // Recharger la galerie après un délai
+    setTimeout(loadGallery, 2000)
+  } else if (urlParams.get('cancel') === '1') {
+    showAlert('Paiement annulé.', 'ERROR')
+    window.history.replaceState({}, '', window.location.pathname)
+  }
+}
+
+// ============================================
 // ALERTES
 // ============================================
 function showAlert(msg, type = 'INFO') {
@@ -310,4 +334,7 @@ document.head.appendChild(style)
 // ESC + INIT
 // ============================================
 document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeObjectModal(); closeUploadModal() } })
-document.addEventListener('DOMContentLoaded', () => console.log('Ready. Click ENTER.'))
+document.addEventListener('DOMContentLoaded', () => {
+  console.log('Ready. Click ENTER.')
+  handlePaymentReturn() // Gérer les retours de paiement
+})
