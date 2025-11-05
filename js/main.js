@@ -19,6 +19,8 @@ document.addEventListener('keydown', e => {
 const SUPABASE_URL = 'https://krioqbogdddqxgzhqzh.supabase.co'
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtyaW9xYm9nb2RkcXhxenpoZ3poIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIyNzY0NzQsImV4cCI6MjA3Nzg1MjQ3NH0.VWCNPqGIVoHsp9u8LY-ZYNtCi0n7oTiSyj1JNo_L_W4'
 const STRIPE_PUBLIC_KEY = 'pk_test_51SQ3OW7s0vK70XRfZl8ltQQLFshEVNDgkDJHaz7ZLE6iAC2BTPeoloTbLgesCfWJJPzqV6AW5YpLhn45tlrVnEMJ00oQRzKe5y'
+
+// Client Supabase UNIQUEMENT pour Storage (upload + getPublicUrl)
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 const stripe = Stripe(STRIPE_PUBLIC_KEY)
 
@@ -58,7 +60,7 @@ function toggleZoom() {
 }
 
 // ============================================
-// SHUFFLE + LOAD GALLERY
+// SHUFFLE + LOAD GALLERY (VIA PROXY)
 // ============================================
 function shuffleArray(arr) {
   const a = [...arr]
@@ -71,15 +73,23 @@ function shuffleArray(arr) {
 
 async function loadGallery() {
   try {
-    const { data: objets, error } = await supabase.from('objets').select('*')
-    if (error) throw error
+    const res = await fetch('/api/supabase/objets?select=*')
+    const objets = await res.json()
+
+    if (!objets || objets.error) {
+      throw new Error(objets?.error?.message || 'Erreur lors du chargement')
+    }
+
     const gallery = document.getElementById('gallery')
     gallery.innerHTML = ''
+
     if (!objets.length) {
       gallery.innerHTML = '<div class="loading-text">No objects yet. Be the first!</div>'
       return
     }
+
     document.getElementById('objectCount').textContent = objets.length
+
     shuffleArray(objets).forEach((o, i) => {
       const item = Object.assign(document.createElement('div'), { className: 'grid-item' })
       const img = Object.assign(document.createElement('img'), {
@@ -93,7 +103,7 @@ async function loadGallery() {
       gallery.appendChild(item)
     })
   } catch (e) {
-    console.error(e)
+    console.error('Erreur loadGallery:', e)
     document.getElementById('gallery').innerHTML = '<div class="loading-text">Error. Refresh.</div>'
   }
 }
@@ -124,42 +134,24 @@ const closeUploadModal = () => document.getElementById('uploadModal').classList.
 // ============================================
 function optimizeAndPreview(file, cb) {
   const reader = new FileReader()
-
   reader.onload = e => {
     const img = new Image()
     img.onload = () => {
       const SIZE = 1080
       const MIN = 800
-
-      // Vérifier taille minimale (au moins un côté > MIN)
       if (img.width < MIN && img.height < MIN) {
         showAlert(`Image trop petite (min ${MIN}px sur un côté)`, 'ERROR')
         return cb(null)
       }
-
       const c = document.createElement('canvas')
       const ctx = c.getContext('2d')
       c.width = SIZE
       c.height = SIZE
-
-      // ✂️ CROP CARRÉ CENTRÉ (pas de letterboxing)
       const minDim = Math.min(img.width, img.height)
       const cropX = (img.width - minDim) / 2
       const cropY = (img.height - minDim) / 2
-
-      // Dessiner la zone carrée recadrée
-      ctx.drawImage(
-        img,
-        cropX, cropY,           // source x, y (début du crop)
-        minDim, minDim,         // source largeur/hauteur (carré)
-        0, 0,                   // destination x, y
-        SIZE, SIZE              // destination largeur/hauteur
-      )
-
-      // Preview (Data URL pour affichage immédiat)
+      ctx.drawImage(img, cropX, cropY, minDim, minDim, 0, 0, SIZE, SIZE)
       const previewUrl = c.toDataURL('image/webp', 0.85)
-
-      // Fichier optimisé (Blob pour upload)
       c.toBlob(b => {
         if (!b) {
           showAlert('Erreur pendant la compression', 'ERROR')
@@ -169,10 +161,8 @@ function optimizeAndPreview(file, cb) {
         cb(optFile, previewUrl)
       }, 'image/webp', 0.85)
     }
-
     img.src = e.target.result
   }
-
   reader.readAsDataURL(file)
 }
 
@@ -182,28 +172,18 @@ function optimizeAndPreview(file, cb) {
 document.getElementById('photoUpload')?.addEventListener('change', e => {
   const file = e.target.files[0]
   if (!file) return
-
-  // Vérifier le type
   if (!file.type.startsWith('image/')) {
     showAlert('Fichier doit être une image', 'ERROR')
     return
   }
-
-  // Optimiser et générer preview
   optimizeAndPreview(file, (optFile, previewUrl) => {
     if (!optFile) return
-
-    // Stocker le fichier optimisé
     optimizedImageFile = optFile
-
-    // Afficher le preview
     const preview = document.getElementById('imagePreview')
     if (preview) {
       preview.src = previewUrl
       preview.classList.remove('hidden')
     }
-
-    // Feedback utilisateur
     const sizeKB = (optFile.size / 1024).toFixed(0)
     showAlert(`Image optimisée (${sizeKB} KB, format carré 1080×1080)`, 'SUCCESS')
   })
@@ -213,7 +193,6 @@ document.getElementById('photoUpload')?.addEventListener('change', e => {
 // PRIX EN EUROS
 // ============================================
 let selectedPrice = 1
-
 function selectPrice(a, e) {
   selectedPrice = a
   document.getElementById('selectedPrice').value = a
@@ -222,7 +201,6 @@ function selectPrice(a, e) {
   document.querySelectorAll('.btn-price').forEach(b => b.classList.remove('selected'))
   e.target.closest('.btn-price')?.classList.add('selected')
 }
-
 document.getElementById('customPrice')?.addEventListener('input', e => {
   const v = parseFloat(e.target.value)
   if (v >= 1) {
@@ -232,7 +210,6 @@ document.getElementById('customPrice')?.addEventListener('input', e => {
     document.querySelectorAll('.btn-price').forEach(b => b.classList.remove('selected'))
   }
 })
-
 function updatePriceDisplays(a) {
   ;['displayPrice', 'displayPrice2', 'displayPrice3'].forEach(id => {
     const el = document.getElementById(id)
@@ -241,10 +218,9 @@ function updatePriceDisplays(a) {
 }
 
 // ============================================
-// SUBMIT
+// SUBMIT (VIA PROXY + STORAGE)
 // ============================================
 let isSubmitting = false
-
 document.getElementById('uploadForm')?.addEventListener('submit', async e => {
   e.preventDefault()
   if (isSubmitting) return
@@ -263,14 +239,18 @@ document.getElementById('uploadForm')?.addEventListener('submit', async e => {
   let lien = document.getElementById('lien').value.trim()
   if (lien && !/^https?:\/\//i.test(lien)) lien = 'https://' + lien
   const price = parseFloat(document.getElementById('selectedPrice').value)
-
   if (price < 1) return showAlert('Min €1', 'ERROR'), resetBtn()
 
+  // Vérifier si l'email existe déjà (via proxy)
   try {
-    const { data: existing } = await supabase.from('objets').select('email').eq('email', email)
+    const res = await fetch(`/api/supabase/objets?select=email&email=eq.${encodeURIComponent(email)}`)
+    const existing = await res.json()
     if (existing?.length) return showAlert('Déjà participé !', 'ERROR'), resetBtn()
-  } catch (err) { console.error(err) }
+  } catch (err) {
+    console.error('Erreur vérification email:', err)
+  }
 
+  // Upload image + paiement
   try {
     const ext = optimizedImageFile.name.split('.').pop()
     const name = `${Date.now()}_${Math.random().toString(36).substr(2,9)}.${ext}`
@@ -285,15 +265,14 @@ document.getElementById('uploadForm')?.addEventListener('submit', async e => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         email, titre, histoire, prenom, ville: country, lien, photo_url: publicUrl,
-        amount: Math.round(price * 100)  // 100 = 1.00 €
+        amount: Math.round(price * 100)
       })
     })
-
     const { sessionId, error } = await res.json()
     if (error) throw new Error(error)
     await stripe.redirectToCheckout({ sessionId })
   } catch (err) {
-    console.error(err)
+    console.error('Erreur upload/paiement:', err)
     showAlert('Erreur. Réessayez.', 'ERROR')
     resetBtn()
   }
@@ -310,7 +289,7 @@ document.getElementById('uploadForm')?.addEventListener('submit', async e => {
 // ALERTES
 // ============================================
 function showAlert(msg, type = 'INFO') {
-  const icons = { ERROR: '✕', SUCCESS: '✓', INFO: 'ℹ' }
+  const icons = { ERROR: 'X', SUCCESS: '✓', INFO: 'i' }
   const div = document.createElement('div')
   div.innerHTML = `<strong>${icons[type] || ''} ${type}:</strong> ${msg}`
   div.style.cssText = `
@@ -323,7 +302,6 @@ function showAlert(msg, type = 'INFO') {
   document.body.appendChild(div)
   setTimeout(() => div.remove(), 3000)
 }
-
 const style = document.createElement('style')
 style.textContent = `@keyframes fadeIn{from{opacity:0;transform:translateX(-50%) translateY(-10px)}to{opacity:1;transform:translateX(-50%)}}`
 document.head.appendChild(style)
