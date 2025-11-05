@@ -18,7 +18,7 @@ document.addEventListener('keydown', e => {
 // ============================================
 const SUPABASE_URL = 'https://krioqbogdddqxgzhqzh.supabase.co'
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtyaW9xYm9nb2RkcXhxenpoZ3poIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIyNzY0NzQsImV4cCI6MjA3Nzg1MjQ3NH0.VWCNPqGIVoHsp9u8LY-ZYNtCi0n7oTiSyj1JNo_L_W4'
-const STRIPE_PUBLIC_KEY = 'pk_test_ta_cle_publique'
+const STRIPE_PUBLIC_KEY = 'pk_test_51SQ3OW7s0vK70XRfZl8ltQQLFshEVNDgkDJHaz7ZLE6iAC2BTPeoloTbLgesCfWJJPzqV6AW5YpLhn45tlrVnEMJ00oQRzKe5y'
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 const stripe = Stripe(STRIPE_PUBLIC_KEY)
 

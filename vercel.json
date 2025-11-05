@@ -12,9 +12,4 @@
       "dest": "/api/$1"
     }
   ],
-  "env": {
-    "STRIPE_SECRET_KEY": "@stripe-secret-key",
-    "SUPABASE_URL": "https://krioqbogdddqxgzhqzh.supabase.co",
-    "SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtyaW9xYm9nb2RkcXhxenpoZ3poIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIyNzY0NzQsImV4cCI6MjA3Nzg1MjQ3NH0.VWCNPqGIVoHsp9u8LY-ZYNtCi0n7oTiSyj1JNo_L_W4"
-  }
 }
