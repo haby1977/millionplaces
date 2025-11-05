@@ -284,7 +284,7 @@ document.getElementById('uploadForm')?.addEventListener('submit', async e => {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        email, titre, histoire, prenom, ville, lien, photo_url: publicUrl,
+        email, titre, histoire, prenom, ville: country, lien, photo_url: publicUrl,
         amount: Math.round(price * 100)  // 100 = 1.00 €
       })
     })
