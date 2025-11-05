@@ -39,8 +39,8 @@ module.exports = async (req, res) => {
         },
       ],
       mode: 'payment',
-      success_url: `${process.env.VERCEL_URL || req.headers.origin}/success.html?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.VERCEL_URL || req.headers.origin}/cancel.html`,
+      success_url: `https://millionplaces-3ni7.vercel.app/success.html?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `https://millionplaces-3ni7.vercel.app/cancel.html`,
       customer_email: email,
       metadata: {
         email,
