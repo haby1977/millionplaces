@@ -2,20 +2,7 @@ import Stripe from 'stripe';
 import { createClient } from '@supabase/supabase-js';
 
 // ----------------------------------------------------------------------
-// 1. CONFIGURATION API (Permet l'envoi d'images Base64 volumineuses)
-// ----------------------------------------------------------------------
-
-export const config = {
-  api: {
-    // Désactive le parser de corps de requête par défaut de Next.js
-    bodyParser: {
-      sizeLimit: '10mb', // Autorise jusqu'à 10MB pour l'image
-    },
-  },
-};
-
-// ----------------------------------------------------------------------
-// 2. INITIALISATION DES SERVICES ET VÉRIFICATION DES CLÉS
+// 1. INITIALISATION DES SERVICES ET VÉRIFICATION DES CLÉS
 // ----------------------------------------------------------------------
 
 // Clés d'environnement (DOIVENT ÊTRE CONFIGURÉES DANS VERCEL)
@@ -44,7 +31,7 @@ if (STRIPE_SECRET_KEY && SUPABASE_URL && SUPABASE_SERVICE_ROLE_KEY) {
 }
 
 // ----------------------------------------------------------------------
-// 3. FONCTION UTILITAIRE
+// 2. FONCTION UTILITAIRE
 // ----------------------------------------------------------------------
 
 /**
@@ -62,7 +49,7 @@ function decodeBase64Image(dataString) {
 
 
 // ----------------------------------------------------------------------
-// 4. HANDLER PRINCIPAL (Route POST)
+// 3. HANDLER PRINCIPAL (Route POST)
 // ----------------------------------------------------------------------
 
 export default async function handler(req, res) {
