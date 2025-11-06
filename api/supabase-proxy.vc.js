@@ -1,7 +1,7 @@
-// api/supabase-proxy.vc.js
+// supabase-proxy.vc.js
 
 // IMPORTANT : Assurez-vous que vos variables Vercel sont nommées
-// NEXT_PUBLIC_SUPABASE_URL et NEXT_PUBLIC_SUPABASE_ANON_KEY pour la meilleure compatibilité.
+// NEXT_PUBLIC_SUPABASE_URL et NEXT_PUBLIC_SUPABASE_ANON_KEY 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
 const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY;
 
@@ -29,7 +29,7 @@ module.exports = async (req, res) => {
 
     const text = await supabaseResponse.text(); // Lisez d'abord comme texte
     
-    // Si la réponse n'est pas OK, renvoyez l'erreur pour la déboguer dans la console Vercel
+    // Si la réponse n'est pas OK, renvoyez l'erreur pour la déboguer
     if (!supabaseResponse.ok) {
         console.error("Erreur de Supabase (Statut:", supabaseResponse.status, ") Réponse:", text);
         return res.status(supabaseResponse.status).json({ error: 'Supabase Error: ' + text });
@@ -49,4 +49,4 @@ module.exports = async (req, res) => {
     console.error("Erreur de connexion Vercel->Supabase:", error);
     res.status(500).json({ error: 'Proxy Vercel échec de connexion.' });
   }
-};
+};// JavaScript Document
