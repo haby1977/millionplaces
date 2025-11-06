@@ -268,7 +268,8 @@ document.getElementById('uploadForm')?.addEventListener('submit', async e => {
     // const { data: { publicUrl } } = supabase.storage.from('photos').getPublicUrl(name)
 
     // Appel à l'API Vercel /api/create-checkout, qui gère maintenant l'upload sécurisé
-    const res = await fetch('pages/api/create-checkout', {
+    // Rétabli au chemin correct : /api/create-checkout
+    const res = await fetch('/api/create-checkout', { 
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
