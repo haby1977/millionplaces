@@ -217,7 +217,6 @@ function updatePriceDisplays(a) {
     if (el) el.textContent = `€${a}`
   })
 }
-
 // ============================================
 // SUBMIT (FIXED: Base64 to Backend)
 // ============================================
@@ -225,7 +224,11 @@ let isSubmitting = false
 document.getElementById('uploadForm')?.addEventListener('submit', async e => {
   e.preventDefault()
   if (isSubmitting) return
-  if (!optimizedImageFile) return showAlert('Image requise', 'ERROR'), resetBtn()
+  if (!optimizedImageFile) {
+        showAlert('Image requise', 'ERROR');
+        resetBtn(); // 💡 Correction: Assurez-vous d'appeler resetBtn() ici
+        return;
+    }
   isSubmitting = true
   const btn = document.querySelector('.btn-submit')
   btn.disabled = true
@@ -240,9 +243,13 @@ document.getElementById('uploadForm')?.addEventListener('submit', async e => {
   let lien = document.getElementById('lien').value.trim()
   if (lien && !/^https?:\/\//i.test(lien)) lien = 'https://' + lien
   const price = parseFloat(document.getElementById('selectedPrice').value)
-  if (price < 1) return showAlert('Min €1', 'ERROR'), resetBtn()
+  if (price < 1) {
+        showAlert('Min €1', 'ERROR');
+        resetBtn(); // 💡 Correction: Assurez-vous d'appeler resetBtn() ici
+        return;
+    }
 
-  // 1. Vérifier si l'email existe déjà (DIRECT SUPABASE - NON CHANGÉ)
+  // 1. Vérifier si l'email existe déjà (DIRECT SUPABASE - CORRIGÉ)
   try {
     const { data: existing, error } = await supabase
       .from('objets')
@@ -252,39 +259,48 @@ document.getElementById('uploadForm')?.addEventListener('submit', async e => {
     
     if (error) throw error
     if (existing && existing.length > 0) {
-      return showAlert('Déjà participé !', 'ERROR'), resetBtn()
+      showAlert('Déjà participé !', 'ERROR'); // Affiche l'alerte
+      resetBtn(); // Réinitialise le bouton après l'alerte
+      return; // Arrête la fonction ici
     }
   } catch (err) {
-    console.error('Erreur vérification email:', err)
+    console.error('Erreur vérification email:', err);
+    // 💡 Correction: Si l'API Supabase plante ici (cause CORS), l'utilisateur
+    // est bloqué. On l'avertit, on réinitialise et on arrête la soumission.
+    showAlert('Erreur de vérification. Réessayez.', 'ERROR'); 
+    resetBtn();
+    return; 
   }
 
   // 2. Conversion en Base64 et Paiement via Backend (CORS FIX)
   try {
-    // ÉTAPE CRUCIALE: Convertir le fichier optimisé en Base64
-    const photoBase64 = await fileToBase64(optimizedImageFile);
+    // ÉTAPE CRUCIALE: Convertir le fichier optimisé en Base64
+    const photoBase64 = await fileToBase64(optimizedImageFile);
 
-    // Supprimer l'ancienne logique d'upload Supabase côté client qui échouait
-    // const { error: upErr } = await supabase.storage.from('photos').upload(...)
-    // const { data: { publicUrl } } = supabase.storage.from('photos').getPublicUrl(name)
-
-    // Appel à l'API Vercel /api/create-checkout, qui gère maintenant l'upload sécurisé
-    // Rétabli au chemin correct : /api/create-checkout
-    const res = await fetch('/api/create-checkout', { 
+    // Appel à l'API Vercel /api/create-checkout, qui gère maintenant l'upload sécurisé
+    const res = await fetch('/api/create-checkout', { 
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        email, titre, histoire, prenom, ville: country, lien, 
-        photo_base64: photoBase64, // <-- ENVOIE LA CHAÎNE BASE64
+        email, titre, histoire, prenom, ville: country, lien, 
+        photo_base64: photoBase64, // <-- ENVOIE LA CHAÎNE BASE64
         amount: Math.round(price * 100)
       })
     })
-    
-    const { sessionId, error } = await res.json()
-    if (error) throw new Error(error)
-    
-    // Redirection Stripe
+    
+    // Vérification explicite du statut 
+    if (!res.ok) {
+        // Le serveur a répondu avec 4xx ou 5xx
+        const errorJson = await res.json();
+        throw new Error(errorJson.error || `Erreur serveur: ${res.status}`);
+    }
+
+    const { sessionId } = await res.json()
+    if (!sessionId) throw new Error("Session ID manquant.")
+    
+    // Redirection Stripe
     await stripe.redirectToCheckout({ sessionId })
-    
+    
   } catch (err) {
     console.error('Erreur upload/paiement:', err)
     showAlert('Erreur. Réessayez.', 'ERROR')
