@@ -26,7 +26,7 @@ body {
     font-family: "scandia-line-web", sans-serif;
     background: var(--text-color);
     color: var(--bg-color);
-    overflow: hidden;
+    overflow-y: hidden;
     line-height: 1.4;
     font-size: var(--font-size-base);
 }
@@ -47,6 +47,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+	overflow: scroll;
 }
 .loader-content {
     max-width: 600px;
