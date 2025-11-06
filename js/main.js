@@ -368,8 +368,13 @@ function fileToBase64(file) {
 // ============================================
 // ESC + INIT
 // ============================================
+// ============================================
+// ESC + INIT
+// ============================================
 document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeObjectModal(); closeUploadModal() } })
 document.addEventListener('DOMContentLoaded', () => {
   console.log('Ready. Click ENTER.')
   handlePaymentReturn() // Gérer les retours de paiement
+  // Forcer le déploiement après la correction RLS Supabase
+  console.log("Supabase RLS est maintenant TRUE. On teste la connexion."); // <-- AJOUTEZ LA ICI
 })
