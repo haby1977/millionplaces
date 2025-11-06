@@ -2,6 +2,17 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
+<link rel="icon" type="image/png" href="fav/favicon.png">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+<meta name="description" content="OMP" />
+<meta property="og:description" content="OMP" />
+<meta property="og:url" content="https://onemillionplaces.art/" />
+<meta property="og:title" content="OMP" />
+<meta property="og:site_name" content="OMP" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="OMP" />
+<meta name="twitter:domain" content="onemillionplaces.art" />
+<meta name="twitter:description" content="OMP" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 <title>onemillionplaces.art</title>
 <link rel="stylesheet" href="css/style.css" />
@@ -45,29 +56,28 @@ transform: rotate(360deg);
       <!-- ABOUT -->
       <section class="loader-section">
         <h2>ABOUT</h2>
-		  <p>ONE MILLION PLACES is a net art project.</p>
-
-<p>We believe the internet lost its soul.</p>
-<p>No more algorithms. No more engagement metrics.
-<p>No more performance anxiety.</p>
-<p>Just one million people sharing their favorite place.</p>
-<p>One photo. One story. Forever.</p>
-<p>This is not a business. This is a collective monument.</p>
-<p>A time capsule. A trust experiment.</p>
-<p>We charge €1-20 not for profit, but to cover costs and create commitment.</p>
-<p>Your contribution keeps the archive alive.</p>
-<p>We don't moderate. We trust you. We believe humanity is worth the risk.</p>
-<p>Welcome to the slowest corner of the internet.</p>
+        <p>ONE MILLION PLACES is a net art project.</p>
+        <p>We believe the internet lost its soul.</p>
+        <p>No more algorithms. No more engagement metrics.
+        <p>No more performance anxiety.</p>
+        <p>Just one million people sharing their favorite place.</p>
+        <p>One photo. One story. Forever.</p>
+        <p>This is not a business. This is a collective monument.</p>
+        <p>A time capsule. A trust experiment.</p>
+        <p>We charge €1-20 not for profit, but to cover costs and create commitment.</p>
+        <p>Your contribution keeps the archive alive.</p>
+        <p>We don't moderate. We trust you. We believe humanity is worth the risk.</p>
+        <p>Welcome to the slowest corner of the internet.</p>
       </section>
       <!-- RULES -->
       <section class="loader-section">
         <h2>RULES</h2>
-        <ol> 
-		  <li>Click on the basket</li>
+        <ol>
+          <li>Click on the basket</li>
           <li>Upload your image.</li>
           <li>Size: min 800×800, max 1080×1080 (auto-resized)</li>
           <li>Describe its story in a few words</li>
-		  <li>Pay what you want (min €1) to upload</li>
+          <li>Pay what you want (min €1) to upload</li>
           <li>You can only participate once. Ever.</li>
         </ol>
       </section>
@@ -104,7 +114,7 @@ transform: rotate(360deg);
 <div id="objectModal" class="modal hidden">
   <div class="modal-overlay" onclick="closeObjectModal()"></div>
   <div class="modal-box">
-    <button class="close" onclick="closeObjectModal()">X</button>
+    <button class="close" onclick="closeObjectModal()">&#10094;</button>
     <img id="modalImg" src="#" alt="Object" />
     <div class="modal-info">
       <h2 id="modalTitle"></h2>
@@ -121,17 +131,16 @@ transform: rotate(360deg);
   <div class="modal-overlay" onclick="closeUploadModal()"></div>
   <div class="modal-box modal-form">
     <button class="close" onclick="closeUploadModal()">+</button>
-    <h2>Post Your Favorite Place</h2>
+    <h2>POST YOUR PLACE</h2>
     <form id="uploadForm">
       <!-- LEFT: FORM -->
       <div class="form-left"> 
-       <!-- PHOTO -->
-<div class="form-section">
-  <div class="form-section-title">Your Favorite Place is ... </div>
-  <input type="file" id="photoUpload" accept="image/*" required style="display: none;" />
-  <label for="photoUpload" class="btn-upload">UPLOAD YOUR IMAGE</label>
-  <img id="imagePreview" class="hidden mt-4" style="max-width: 100%; border-radius: 8px;" alt="Preview">
-</div>
+        <!-- PHOTO -->
+        <div class="form-section">
+          <div class="form-section-title">Your Favorite Place is ... </div>
+          <input type="file" id="photoUpload" accept="image/*" required style="display: none;" />
+          <label for="photoUpload" class="btn-upload">UPLOAD YOUR IMAGE</label>
+          <img id="imagePreview" class="hidden mt-4" style="max-width: 100%; border-radius: 8px;" alt="Preview"> </div>
         <!-- CONTACT -->
         <div class="form-section">
           <div class="form-section-title">Contact Information</div>
