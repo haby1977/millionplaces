@@ -1,11 +1,11 @@
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const { createClient } = require('@supabase/supabase-js');
-const { buffer } = require('micro'); // Nécessaire pour lire le corps brut pour Stripe
+const { buffer } = require('micro'); // NÃ©cessaire pour lire le corps brut pour Stripe
 
 // ============================================
 // 1. INITIALISATION SUPABASE (SERVICE ROLE)
 // ============================================
-// Utilisation de la clé SERVICE_ROLE pour l'accès backend (ignore RLS)
+// Utilisation de la clÃ© SERVICE_ROLE pour l'accÃ¨s backend (ignore RLS)
 const supabase = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_SERVICE_ROLE_KEY
@@ -14,9 +14,9 @@ const supabase = createClient(
 // ============================================
 // 2. CONFIGURATION NEXT.JS/VERCEL
 // ============================================
-// Désactive le parsing automatique du corps de la requête.
+// DÃ©sactive le parsing automatique du corps de la requÃªte.
 // CRUCIAL pour Stripe, qui a besoin du corps sous forme de buffer.
-export const config = {
+exports.config = {
   api: {
     bodyParser: false,
   },
@@ -30,7 +30,7 @@ module.exports = async (req, res) => {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  // A. Lire le Corps Brut pour la Sécurité
+  // A. Lire le Corps Brut pour la SÃ©curitÃ©
   const rawBody = await buffer(req);
   const sig = req.headers['stripe-signature'];
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
@@ -38,18 +38,18 @@ module.exports = async (req, res) => {
   let event;
 
   try {
-    // B. Vérification de la Signature
+    // B. VÃ©rification de la Signature
     event = stripe.webhooks.constructEvent(rawBody, sig, webhookSecret);
   } catch (err) {
-    console.error('? Webhook signature verification failed:', err.message);
+    console.error('âŒ Webhook signature verification failed:', err.message);
     return res.status(400).send(`Webhook Error: ${err.message}`);
   }
 
-  // C. Traitement de l'Événement
+  // C. Traitement de l'Ã©vÃ©nement
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object;
 
-    // Récupérer les métadonnées envoyées depuis votre frontend
+    // RÃ©cupÃ©rer les mÃ©tadonnÃ©es envoyÃ©es depuis votre frontend
     const { email, titre, histoire, prenom, ville, lien, photo_url } = session.metadata;
 
     try {
@@ -73,14 +73,14 @@ module.exports = async (req, res) => {
 
       if (error) throw error;
 
-      console.log('? Object inserted successfully:', data);
+      console.log('âœ… Object inserted successfully:', data);
     } catch (err) {
-      console.error('? Error inserting into Supabase:', err);
-      // Répondre 200 à Stripe pour éviter les retries, même en cas d'erreur DB
+      console.error('âŒ Error inserting into Supabase:', err);
+      // RÃ©pondre 200 Ã  Stripe pour Ã©viter les retries, mÃªme en cas d'erreur DB
       return res.status(200).json({ received: true, db_error: err.message });
     }
   }
 
-  // D. Réponse Finale à Stripe
+  // D. RÃ©ponse Finale Ã  Stripe
   res.status(200).json({ received: true });
 };
