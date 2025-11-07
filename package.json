@@ -2,9 +2,18 @@
   "name": "millionplaces",
   "version": "1.0.0",
   "description": "Million Places - Object Gallery",
+  "scripts": {
+    "dev": "vercel dev",
+    "build": "echo 'Static site, no build needed'",
+    "deploy": "vercel --prod"
+  },
   "dependencies": {
     "stripe": "^14.0.0",
     "@supabase/supabase-js": "^2.39.0",
-    "node-fetch": "^2.6.7"
+    "node-fetch": "^2.6.7",
+    "micro": "^10.0.1"
+  },
+  "devDependencies": {
+    "vercel": "^33.0.0"
   }
 }
