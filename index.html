@@ -125,21 +125,20 @@ transform: rotate(360deg);
 </div>
 
 <!-- ============================================ --> 
-<!-- MODAL: UPLOAD + PAYMENT --> 
+<!-- MODAL: UPLOAD 
 <!-- ============================================ -->
 <div id="uploadModal" class="modal hidden">
   <div class="modal-overlay" onclick="closeUploadModal()"></div>
   <div class="modal-box modal-form">
     <button class="close" onclick="closeUploadModal()">+</button>
-    <h2>POST YOUR PLACE</h2>
+    <h2>ONE MILLION PLACES </h2>
     <form id="uploadForm">
       <!-- LEFT: FORM -->
       <div class="form-left"> 
         <!-- PHOTO -->
         <div class="form-section">
-          <div class="form-section-title">Your Favorite Place is ... </div>
           <input type="file" id="photoUpload" accept="image/*" required style="display: none;" />
-          <label for="photoUpload" class="btn-upload">UPLOAD YOUR IMAGE</label>
+          <label for="photoUpload" class="btn-upload">Upload your place</label>
           <img id="imagePreview" class="hidden mt-4" style="max-width: 100%; border-radius: 8px;" alt="Preview"> </div>
         <!-- CONTACT -->
         <div class="form-section">
@@ -152,37 +151,12 @@ transform: rotate(360deg);
           <div class="form-section-title">Details of your place</div>
           <label>Name of your place </label>
           <input type="text" id="titre" required maxlength="50" />
-          <label>Why This One?</label>
-          <input type="text" id="histoire" required maxlength="150" />
           <label>Your Name</label>
           <input type="text" id="prenom" required maxlength="30" />
           <label>Country</label>
           <input type="text" id="country" maxlength="50" />
           <label>Link</label>
           <input type="url" id="lien" placeholder="https://..." />
-        </div>
-      </div>
-      
-      <!-- RIGHT: SUMMARY + PAYMENT -->
-      <div class="form-right">
-        <div class="order-summary">
-          <h3>Order Summary</h3>
-          <div class="summary-line"> <span>One Object</span> <span id="displayPrice">€1</span> </div>
-          <div class="summary-line total"> <span>Total</span> <span id="displayPrice2">€1</span> </div>
-          <div class="price-section">
-            <label>Pay What You Want (Min €1)</label>
-            <div class="price-buttons">
-              <button type="button" class="btn-price selected" onclick="selectPrice(1, event)">€1</button>
-              <button type="button" class="btn-price" onclick="selectPrice(5, event)">€5</button>
-              <button type="button" class="btn-price" onclick="selectPrice(10, event)">€10</button>
-              <button type="button" class="btn-price" onclick="selectPrice(20, event)">€20</button>
-            </div>
-            <div class="selected-amount"> Your Contribution: <strong id="displayPrice3">€1</strong> </div>
-            <input type="number" id="customPrice" min="1" step="1" placeholder="Custom Amount" />
-            <input type="hidden" id="selectedPrice" value="1" />
-          </div>
-          <p class="note">All transactions are encrypted and secure</p>
-          <button type="submit" class="btn-submit">CONTINUE TO PAYMENT</button>
         </div>
       </div>
     </form>
@@ -193,7 +167,6 @@ transform: rotate(360deg);
 <!-- SCRIPTS --> 
 <!-- ============================================ --> 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script> 
-<script src="https://js.stripe.com/v3/"></script> 
 <script src="js/main.js"></script>
 </body>
 </html>
