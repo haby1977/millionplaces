@@ -9,14 +9,12 @@
 <script>try{Typekit.load({ async: true });}catch(e){}</script>
 <script src="https://fonts.googleapis.com/icon?family=Material+Icons"></script>
 
-<script src="https://ucarecdn.com/libs/widget/3.x/uploadcare.full.min.js"></script> 
-
 <style>
-/* * Collez ici tout votre CSS interne (le cas échéant). 
- * Sinon, assurez-vous que votre fichier CSS externe est lié (exemple ci-dessous).
- */
+/* ... Votre CSS interne ... */
 </style>
-<link rel="stylesheet" href="css/style.css"> </head>
+<link rel="stylesheet" href="css/style.css"> 
+
+</head>
 <body>
 
 <div id="loaderPage" class="full-screen-center">
@@ -47,7 +45,7 @@
     <div class="modal-overlay" onclick="closeObjectModal()"></div>
     <div class="modal-box modal-detail">
         <button class="close" onclick="closeObjectModal()">+</button>
-        <img id="modalImg" src="#" alt="Object Image">
+        <img id="modalImg" src="" alt="Object Image">
         <div class="content">
             <h2 id="modalTitle">TITLE</h2>
             <p id="modalStory">"Story"</p>
@@ -72,15 +70,12 @@
                 <div class="form-section">
           <div class="form-section-title">Your Favorite Place is ... </div>
           
-          <input type="hidden" 
-            role="uploadcare-uploader" 
-            id="photoUploadCare" 
-            name="photoUploadCare" 
-            data-public-key="VOTRE_CLÉ_PUBLIQUE_UPLOADCARE"             data-crop="1:1" 
-            data-image-shrink="1080x1080" 
-            data-clearable="true" 
-            required 
-          />
+          <label for="photoUpload" class="btn-file">
+            UPLOAD YOUR IMAGE
+          </label>
+          <input type="file" id="photoUpload" accept="image/*" style="display:none;" required>
+          
+          <img id="imagePreview" src="" alt="Image Preview" class="hidden">
         </div>
 
                 <div class="form-section">

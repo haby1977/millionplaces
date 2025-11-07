@@ -22,8 +22,7 @@ const stripe = Stripe(STRIPE_PUBLIC_KEY) // Initialisation de Stripe
 // ============================================
 // VARIABLE GLOBALE POUR L'IMAGE OPTIMISÉE
 // ============================================
-// RÉTIRÉ : Cette variable n'est plus nécessaire. Uploadcare gère le fichier.
-// let optimizedImageFile = null
+let optimizedImageFile = null
 
 // ============================================
 // LOADER ? SITE
@@ -31,8 +30,7 @@ const stripe = Stripe(STRIPE_PUBLIC_KEY) // Initialisation de Stripe
 function enterSite() {
   document.getElementById('loaderPage').classList.add('hidden')
   document.getElementById('mainSite').classList.remove('hidden')
-  // ATTENTION : Désactivation temporaire pour éviter l'erreur de proxy !
-  // loadGallery()
+  loadGallery() // Réactivé
 }
 
 // ============================================
@@ -57,7 +55,7 @@ function toggleZoom() {
 }
 
 // ============================================
-// SHUFFLE + LOAD GALLERY (MAINTENANT DÉSACTIVÉ)
+// SHUFFLE + LOAD GALLERY (Réactivé)
 // ============================================
 function shuffleArray(arr) {
   const a = [...arr]
@@ -70,9 +68,8 @@ function shuffleArray(arr) {
 
 async function loadGallery() {
   try {
-    // Désactivation temporaire pour éviter l'erreur de proxy
-    document.getElementById('gallery').innerHTML = '<div class="loading-text">Archive loading...</div>'
-    const response = await fetch('/api/supabase-proxy'); // L'appel reste ici si vous voulez le réactiver plus tard
+    // Appel au proxy Vercel
+    const response = await fetch('/api/supabase-proxy');
 
     if (!response.ok) {
         const errorJson = await response.json().catch(() => ({ error: 'Unknown Proxy Error' }));
@@ -130,16 +127,64 @@ const openUploadModal = () => document.getElementById('uploadModal').classList.r
 const closeUploadModal = () => document.getElementById('uploadModal').classList.add('hidden')
 
 // ============================================
-// IMAGE OPTIMIZATION (RÉTIRÉE)
-// L'optimisation est gérée par Uploadcare (data-image-shrink="1080x1080")
-// Les fonctions optimizeAndPreview, fileToBase64 et le gestionnaire d'input file sont retirés
+// IMAGE OPTIMIZATION — CROP CARRÉ CENTRÉ (RESTAURÉ)
 // ============================================
-// Suppression du gestionnaire input file car nous utilisons Uploadcare (via index.html)
-/*
+function optimizeAndPreview(file, cb) {
+  const reader = new FileReader()
+  reader.onload = e => {
+    const img = new Image()
+    img.onload = () => {
+      const SIZE = 1080
+      const MIN = 800
+      if (img.width < MIN && img.height < MIN) {
+        showAlert(`Image trop petite (min ${MIN}px sur un côté)`, 'ERROR')
+        return cb(null)
+      }
+      const c = document.createElement('canvas')
+      const ctx = c.getContext('2d')
+      c.width = SIZE
+      c.height = SIZE
+      const minDim = Math.min(img.width, img.height)
+      const cropX = (img.width - minDim) / 2
+      const cropY = (img.height - minDim) / 2
+      ctx.drawImage(img, cropX, cropY, minDim, minDim, 0, 0, SIZE, SIZE)
+      const previewUrl = c.toDataURL('image/webp', 0.85)
+      c.toBlob(b => {
+        if (!b) {
+          showAlert('Erreur pendant la compression', 'ERROR')
+          return cb(null)
+        }
+        const optFile = new File([b], 'opt.webp', { type: 'image/webp' })
+        cb(optFile, previewUrl)
+      }, 'image/webp', 0.85)
+    }
+    img.src = e.target.result
+  }
+  reader.readAsDataURL(file)
+}
+
+// ============================================
+// GESTIONNAIRE INPUT FILE (RESTAURÉ)
+// ============================================
 document.getElementById('photoUpload')?.addEventListener('change', e => {
-    // ... code d'optimisation retiré ...
+  const file = e.target.files[0]
+  if (!file) return
+  if (!file.type.startsWith('image/')) {
+    showAlert('Fichier doit être une image', 'ERROR')
+    return
+  }
+  optimizeAndPreview(file, (optFile, previewUrl) => {
+    if (!optFile) return
+    optimizedImageFile = optFile
+    const preview = document.getElementById('imagePreview')
+    if (preview) {
+      preview.src = previewUrl
+      preview.classList.remove('hidden')
+    }
+    const sizeKB = (optFile.size / 1024).toFixed(0)
+    showAlert(`Image optimisée (${sizeKB} KB, format carré 1080×1080)`, 'SUCCESS')
+  })
 })
-*/
 
 // ============================================
 // PRIX EN EUROS
@@ -165,23 +210,48 @@ document.getElementById('customPrice')?.addEventListener('input', e => {
 function updatePriceDisplays(a) {
   ;['displayPrice', 'displayPrice2', 'displayPrice3'].forEach(id => {
     const el = document.getElementById(id)
-    // CORRECTION FINALE : Syntaxe correcte pour le symbole Euro
     if (el) el.textContent = `€${a}`
   })
 }
 
 // ============================================
-// SUBMIT (UPLOADCARE + PAIEMENT)
+// FONCTION UTILITAIRE BASE64 (RESTAURÉE)
+// ============================================
+/**
+ * Lit un objet File et retourne une promesse qui se résout en chaîne Base64.
+ */
+function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+        if (!file) {
+            return reject(new Error("Aucun fichier fourni."));
+        }
+        
+        const reader = new FileReader();
+        
+        // Convertit le fichier en Base64
+        reader.readAsDataURL(file); 
+        
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = error => reject(error);
+    });
+}
+
+// ============================================
+// SUBMIT (RESTAURÉ POUR BASE64)
 // ============================================
 let isSubmitting = false
 document.getElementById('uploadForm')?.addEventListener('submit', async e => {
   e.preventDefault()
   if (isSubmitting) return
-
+  if (!optimizedImageFile) {
+    showAlert('Image requise', 'ERROR');
+    resetBtn();
+    return;
+  }
   isSubmitting = true
   const btn = document.querySelector('.btn-submit')
   btn.disabled = true
-  btn.textContent = 'PAYMENT...'
+  btn.textContent = 'UPLOAD & PAY...'
   btn.classList.add('loading')
 
   const email = document.getElementById('email').value.trim()
@@ -192,28 +262,28 @@ document.getElementById('uploadForm')?.addEventListener('submit', async e => {
   let lien = document.getElementById('lien').value.trim()
   if (lien && !/^https?:\/\//i.test(lien)) lien = 'https://' + lien
   const price = parseFloat(document.getElementById('selectedPrice').value)
-  
-  // NOUVEAU: Récupération de l'URL d'Uploadcare depuis l'input caché
-  const photoUrl = document.getElementById('photoUploadCare')?.value.trim()
-
-  if (price < 1 || !photoUrl) {
-    showAlert(price < 1 ? 'Min €1' : 'Image requise.', 'ERROR');
+  if (price < 1) {
+    showAlert('Min €1', 'ERROR');
     resetBtn();
     return;
   }
 
-  // Paiement via Backend avec l'URL légère
+  // ÉTAPE CRUCIALE: Conversion en Base64 et Paiement via Backend (CORS FIX)
   try {
+    const photoBase64 = await fileToBase64(optimizedImageFile);
+
+    // Appel à l'API Vercel /api/create-checkout
     const res = await fetch('/api/create-checkout', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         email, titre, histoire, prenom, ville: country, lien,
-        photo_url: photoUrl, // ENVOI DE L'URL (LÉGÈRE)
+        photo_base64: photoBase64, // <-- ENVOIE LA CHAÎNE BASE64
         amount: Math.round(price * 100)
       })
     })
 
+    // Vérification explicite du statut
     if (!res.ok) {
         const errorJson = await res.json();
         throw new Error(errorJson.error || `Erreur serveur: ${res.status}`);
@@ -222,6 +292,7 @@ document.getElementById('uploadForm')?.addEventListener('submit', async e => {
     const { sessionId } = await res.json()
     if (!sessionId) throw new Error("Session ID manquant.")
 
+    // Redirection Stripe
     await stripe.redirectToCheckout({ sessionId })
 
   } catch (err) {
@@ -245,9 +316,10 @@ function handlePaymentReturn() {
   const urlParams = new URLSearchParams(window.location.search)
   if (urlParams.get('success') === '1') {
     showAlert('Paiement réussi ! Votre objet va apparaître.', 'SUCCESS')
+    // Nettoyer l'URL
     window.history.replaceState({}, '', window.location.pathname)
-    // Réactiver la galerie si elle est réparée
-    // setTimeout(loadGallery, 2000)
+    // Recharger la galerie après un délai
+    setTimeout(loadGallery, 2000)
   } else if (urlParams.get('cancel') === '1') {
     showAlert('Paiement annulé.', 'ERROR')
     window.history.replaceState({}, '', window.location.pathname)
@@ -258,7 +330,7 @@ function handlePaymentReturn() {
 // ALERTES
 // ============================================
 function showAlert(msg, type = 'INFO') {
-  const icons = { ERROR: 'X', SUCCESS: '?', INFO: 'i' } // Utilisation du symbole de coche pour SUCCESS
+  const icons = { ERROR: 'X', SUCCESS: '?', INFO: 'i' }
   const div = document.createElement('div')
   div.innerHTML = `<strong>${icons[type] || ''} ${type}:</strong> ${msg}`
   div.style.cssText = `
@@ -276,20 +348,18 @@ style.textContent = `@keyframes fadeIn{from{opacity:0;transform:translateX(-50%)
 document.head.appendChild(style)
 
 // ============================================
-// FONCTION UTILITAIRE BASE64 (RÉTIRÉE)
-// ============================================
-/*
-function fileToBase64(file) {
-  // Fonction Base64 retirée car Uploadcare gère l'upload
-}
-*/
-
-// ============================================
 // ESC + INIT
 // ============================================
-document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeObjectModal(); closeUploadModal() } })
+document.addEventListener('keydown', e => { 
+    if (e.key === 'Enter') { 
+        enterSite(); 
+    }
+    if (e.key === 'Escape') { 
+        closeObjectModal(); 
+        closeUploadModal(); 
+    } 
+});
 document.addEventListener('DOMContentLoaded', () => {
   console.log('Ready. Click ENTER.')
   handlePaymentReturn() // Gérer les retours de paiement
-  // L'appel à loadGallery() est maintenant géré par enterSite (ou désactivé)
 })

@@ -1,109 +1,164 @@
-// api/create-checkout.js (à l'intérieur du dossier 'api')
-
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-const { createClient } = require('@supabase/supabase-js');
-
-// === Configuration Supabase Service Role Key (SECURE) ===
-// Les variables d'environnement sont lues directement dans l'environnement Vercel
-const SUPABASE_URL = process.env.SUPABASE_URL; 
-const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY; 
-
-// Initialisation des services
-const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
-
+import Stripe from 'stripe';
+import { createClient } from '@supabase/supabase-js';
 
 // ======================================================================
-// HANDLER PRINCIPAL (Route POST)
-// Utilisation de module.exports pour une fonction Serverless Vercel standard
+// CONFIGURATION VERCEL / NEXT.JS
+// Augmentation de la limite du corps de la requête pour supporter le Base64
 // ======================================================================
-
-module.exports = async (req, res) => {
-    // Vérification initiale des services (simple)
-    if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY || !process.env.STRIPE_SECRET_KEY) {
-        return res.status(500).json({ error: "Erreur de configuration serveur. Les clés sont manquantes." });
-    }
-
-    if (req.method !== 'POST') {
-        // La gestion des OPTIONS (CORS) est souvent gérée automatiquement par Vercel ou via sa config.
-        return res.status(405).json({ error: 'Méthode non autorisée' });
-    }
-
-    try {
-        const { 
-            email, titre, histoire, prenom, ville, lien, amount,
-            photo_url // <--- NOUVEAU : On attend l'URL légère d'Uploadcare, PAS photo_base64
-        } = req.body;
-
-        // Validation simple
-        if (!email || !titre || !photo_url || !amount || amount < 100) {
-            return res.status(400).json({ error: 'Champs requis manquants (montant minimum 1€ ou URL de la photo)' });
-        }
-
-        // --- 1. CRÉATION DE L'OBJET TEMPORAIRE DANS SUPABASE (Avant Stripe) ---
-        
-        // On stocke toutes les données (y compris l'URL légère de la photo)
-        const { data: dbData, error: dbError } = await supabase
-            .from('objets') // Assurez-vous que le nom de la table est 'objets'
-            .insert({
-                email,
-                titre,
-                histoire,
-                prenom,
-                ville,
-                lien,
-                photo_url: photo_url, // <-- L'URL d'Uploadcare est stockée ici
-                montant: amount / 100,
-                statut_paiement: 'pending' // En attente de la confirmation Stripe (Webhook)
-            })
-            .select()
-            .single();
-
-        if (dbError) {
-            console.error("Erreur Supabase à la création de l'objet temporaire:", dbError);
-            return res.status(500).json({ error: 'Erreur de base de données à l\'étape 1.' });
-        }
-        
-        const temporaryObjectId = dbData.id;
-
-        // --- 2. CRÉATION DE LA SESSION STRIPE ---
-        
-        const origin = req.headers.origin || 'https://onemillionplaces.art';
-
-        const session = await stripe.checkout.sessions.create({
-            payment_method_types: ['card'],
-            line_items: [
-                {
-                    price_data: {
-                        currency: 'eur',
-                        product_data: {
-                            name: 'Participation - ' + titre,
-                            description: 'Ajout d\'un objet à la galerie',
-                        },
-                        unit_amount: amount, // en centimes
-                    },
-                    quantity: 1,
-                },
-            ],
-            mode: 'payment',
-            // Stocker l'ID de l'objet temporaire pour que le Webhook puisse le mettre à jour
-            metadata: {
-                object_id: temporaryObjectId, // ID temporaire de l'objet créé ci-dessus
-                // Nous n'avons pas besoin de stocker TOUTES les données (email, photo_url) dans les metadata Stripe, 
-                // car elles sont déjà dans l'objet 'pending' de Supabase (dbData).
-            },
-            success_url: `${origin}/?success=1&id=${temporaryObjectId}`,
-            cancel_url: `${origin}/?cancel=1&id=${temporaryObjectId}`,
-            customer_email: email,
-        });
-
-        // Succès : Renvoie l'ID de session au frontend
-        return res.status(200).json({ sessionId: session.id });
-
-    } catch (error) {
-        console.error('Erreur du Backend (Stripe ou général):', error);
-        return res.status(500).json({ 
-            error: 'Une erreur interne est survenue lors de la création de la session de paiement.',
-            details: error.message || 'Erreur inconnue.'
-        });
-    }
+export const config = {
+  api: {
+    bodyParser: {
+      sizeLimit: '10mb', // Monté à 10 Mo pour plus de sécurité
+    },
+  },
 };
+
+// ----------------------------------------------------------------------
+// 1. INITIALISATION DES SERVICES ET VÉRIFICATION DES CLÉS
+// ----------------------------------------------------------------------
+
+const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
+const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+let stripeClient, supabaseClient;
+
+// Initialisation conditionnelle
+if (STRIPE_SECRET_KEY && SUPABASE_URL && SUPABASE_SERVICE_ROLE_KEY) {
+    try {
+        // Client Supabase avec le RÔLE DE SERVICE (Admin)
+        supabaseClient = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+        
+        // Client Stripe
+        stripeClient = new Stripe(STRIPE_SECRET_KEY, {
+            apiVersion: '2020-08-27',
+        });
+    } catch (e) {
+        console.error("Erreur lors de l'initialisation des clients:", e.message);
+    }
+} else {
+    console.error("ERREUR CRITIQUE: Clés d'environnement (Stripe/Supabase) manquantes.");
+}
+
+// ----------------------------------------------------------------------
+// 2. FONCTION UTILITAIRE : Décodage Base64
+// ----------------------------------------------------------------------
+
+/**
+ * Décode la chaîne Base64 en un Buffer (pour l'upload vers Supabase Storage).
+ */
+function decodeBase64Image(dataString) {
+    const matches = dataString.match(/^data:([A-Za-z-+/]+);base64,(.+)$/);
+    if (!matches || matches.length !== 3) {
+        throw new Error('Format de donnée image Base64 invalide');
+    }
+    const mimeType = matches[1];
+    const buffer = Buffer.from(matches[2], 'base64'); 
+    return { buffer, mimeType };
+}
+
+
+// ----------------------------------------------------------------------
+// 3. HANDLER PRINCIPAL (Route POST)
+// ----------------------------------------------------------------------
+
+export default async function handler(req, res) {
+    // Vérification initiale des services
+    if (!stripeClient || !supabaseClient) {
+        return res.status(500).json({ error: "Erreur de configuration serveur. Les clés sont manquantes." });
+    }
+
+    if (req.method !== 'POST') {
+        // Gestion OPTIONS (Preflight CORS)
+        if (req.method === 'OPTIONS') {
+            res.setHeader('Access-Control-Allow-Origin', '*');
+            res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+            res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+            return res.status(200).end();
+        }
+        return res.status(405).json({ error: 'Méthode non autorisée' });
+    }
+
+    try {
+        // Récupération de photo_base64
+        const { email, titre, histoire, prenom, ville, lien, photo_base64, amount } = req.body;
+
+        // Validation simple
+        if (!email || !titre || !photo_base64 || !amount || amount < 100) {
+            return res.status(400).json({ error: 'Champs requis manquants (montant minimum 1€)' });
+        }
+
+        let finalPhotoUrl = null;
+
+        // --- UPLOAD SÉCURISÉ SUPABASE STORAGE (avec Service Role Key) ---
+        try {
+            const { buffer: fileBuffer, mimeType } = decodeBase64Image(photo_base64);
+            const fileExtension = mimeType.split('/')[1] || 'webp';
+            const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExtension}`;
+            const filePath = fileName; 
+
+            // Upload du Buffer binaire vers Supabase Storage
+            const { error: uploadError } = await supabaseClient.storage
+                .from('photos')
+                .upload(filePath, fileBuffer, {
+                    contentType: mimeType,
+                    upsert: false, 
+                });
+            
+            if (uploadError) {
+                console.error("Erreur d'upload Supabase:", uploadError);
+                throw new Error(uploadError.message);
+            }
+
+            // Récupération de l'URL publique
+            const { data: publicUrlData } = supabaseClient.storage
+                .from('photos')
+                .getPublicUrl(filePath);
+
+            finalPhotoUrl = publicUrlData.publicUrl;
+
+        } catch (uploadOrDecodeError) {
+             console.error('Échec de l\'upload de l\'image (Base64/Supabase):', uploadOrDecodeError.message);
+             return res.status(422).json({ 
+                 error: "Échec de l'upload de l'image ou format Base64 invalide.", 
+                 details: uploadOrDecodeError.message 
+             });
+        }
+        
+        // --- CRÉATION DE LA SESSION STRIPE ---
+        
+        // Utilisation de l'origine pour une redirection sécurisée
+        const origin = req.headers.origin || 'https://www.onemillionplaces.art';
+
+        const session = await stripeClient.checkout.sessions.create({
+            payment_method_types: ['card'],
+            line_items: [
+                {
+                    price_data: {
+                        currency: 'eur',
+                        product_data: {
+                            name: 'Participation - ' + titre,
+                            description: 'Ajout d\'un objet à la galerie',
+                        },
+                        unit_amount: amount, // en centimes
+                    },
+                    quantity: 1,
+                },
+            ],
+            mode: 'payment',
+            // Stocker toutes les métadonnées pour l'insertion DB par le Webhook après paiement
+            metadata: {
+                email, titre, histoire, prenom,
+                ville: ville || '',
+                lien: lien || '',
+                photo_url: finalPhotoUrl, 
+            },
+            success_url: `${origin}/?success=1&session_id={CHECKOUT_SESSION_ID}`,
+            cancel_url: `${origin}/?cancel=1`,
+            customer_email: email,
+        });
+
+        // Succès : Renvoie l'ID de session au frontend
+        return res.status(200).json({ sessionId: session.id });
+
+    } catch (error)
