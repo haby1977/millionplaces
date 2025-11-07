@@ -254,7 +254,7 @@ document.getElementById('uploadForm')?.addEventListener('submit', async e => {
         prenom,
         ville: country,
         lien,
-        photo_url,
+        year,
         created_at: new Date().toISOString()
       }])
 
