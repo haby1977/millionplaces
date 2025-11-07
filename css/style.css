@@ -672,9 +672,9 @@ body {
     margin-left: 10px;
 }
 @keyframes spin {
-    to {
-        transform: rotate(360deg);
-    }
+  to {
+    transform: rotate(360deg);
+  }
 }
 /* RESPONSIVE */
 @media (max-width: 968px) {
