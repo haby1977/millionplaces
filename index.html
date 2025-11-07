@@ -2,198 +2,141 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<link rel="icon" type="image/png" href="fav/favicon.png">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
-<meta name="description" content="OMP" />
-<meta property="og:description" content="OMP" />
-<meta property="og:url" content="https://onemillionplaces.art/" />
-<meta property="og:title" content="OMP" />
-<meta property="og:site_name" content="OMP" />
-<meta name="twitter:card" content="summary" />
-<meta name="twitter:title" content="OMP" />
-<meta name="twitter:domain" content="onemillionplaces.art" />
-<meta name="twitter:description" content="OMP" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-<title>onemillionplaces.art</title>
-<link rel="stylesheet" href="css/style.css" />
-<link rel="stylesheet" href="https://use.typekit.net/cad5ndb.css" />
-<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<title>One Million Places</title>
+
+<script src="https://use.typekit.net/cad5ndb.js"></script>
+<script>try{Typekit.load({ async: true });}catch(e){}</script>
+<script src="https://fonts.googleapis.com/icon?family=Material+Icons"></script>
+
+<script src="https://ucarecdn.com/libs/widget/3.x/uploadcare.full.min.js"></script> 
+
 <style>
-@keyframes fadeIn {
-from {
-opacity: 0;
-transform: translateX(-50%) translateY(-10px);
-}
-to {
-opacity: 1;
-transform: translateX(-50%) translateY(0);
-}
-}
-.btn-submit.loading::after {
-    content: "";
-    display: inline-block;
-    width: 12px;
-    height: 12px;
-    border: 2px solid transparent;
-    border-top: 2px solid #FDFFFC;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    margin-left: 10px;
-}
-@keyframes spin to {
-transform: rotate(360deg);
-}
+/* * Collez ici tout votre CSS interne (le cas échéant). 
+ * Sinon, assurez-vous que votre fichier CSS externe est lié (exemple ci-dessous).
+ */
 </style>
-</head>
+<link rel="stylesheet" href="css/style.css"> </head>
 <body>
-<!-- ============================================ --> 
-<!-- LOADER PAGE (About / Rules / ENTER) --> 
-<!-- ============================================ -->
-<div id="loaderPage" class="loader-page">
-  <div class="loader-content">
-    <h1 class="loader-title">ONE MILLION PLACES</h1>
-    <div class="loader-sections"> 
-      <!-- ABOUT -->
-      <section class="loader-section">
-        <h2>ABOUT</h2>
-        <p>ONE MILLION PLACES is a net art project.</p>
-        <p>We believe the internet lost its soul.</p>
-        <p>No more algorithms. No more engagement metrics.
-        <p>No more performance anxiety.</p>
-        <p>Just one million people sharing their favorite place.</p>
-        <p>One photo. One story. Forever.</p>
-        <p>This is not a business. This is a collective monument.</p>
-        <p>A time capsule. A trust experiment.</p>
-        <p>We charge €1-20 not for profit, but to cover costs and create commitment.</p>
-        <p>Your contribution keeps the archive alive.</p>
-        <p>We don't moderate. We trust you. We believe humanity is worth the risk.</p>
-        <p>Welcome to the slowest corner of the internet.</p>
-      </section>
-      <!-- RULES -->
-      <section class="loader-section">
-        <h2>RULES</h2>
-        <ol>
-          <li>Click on the basket</li>
-          <li>Upload your image.</li>
-          <li>Size: min 800×800, max 1080×1080 (auto-resized)</li>
-          <li>Describe its story in a few words</li>
-          <li>Pay what you want (min €1) to upload</li>
-          <li>You can only participate once. Ever.</li>
-        </ol>
-      </section>
-    </div>
-    <button class="btn-enter" onclick="enterSite()">ENTER</button>
-  </div>
+
+<div id="loaderPage" class="full-screen-center">
+    <h1>ONE MILLION PLACES</h1>
+    <p>Press <span class="material-icons">east</span> to enter</p>
 </div>
 
-<!-- ============================================ --> 
-<!-- MAIN SITE (hidden at start) --> 
-<!-- ============================================ -->
-<div id="mainSite" class="main-site hidden"> 
-  <!-- TOP BAR -->
-  <header class="top-bar">
-    <div class="top-left"> <span class="count" id="objectCount"><strong>0</strong></span> </div>
-    <div class="top-center">
-      <button class="btn-zoom" id="zoomBtn" onclick="toggleZoom()">+</button>
-    </div>
-    <div class="top-right">
-      <button class="btn-cart" onclick="openUploadModal()" aria-label="Open cart"></button>
-    </div>
-  </header>
-  <!-- GRID -->
-  <main class="grid-container">
-    <div class="grid" id="gallery" data-columns="20">
-      <div class="loading-text">Loading...</div>
-    </div>
-  </main>
+<div id="mainSite" class="hidden">
+
+    <header>
+        <div class="logo">ONE MILLION PLACES</div>
+        <div class="menu">
+            <span id="objectCount">0</span>
+            <button id="zoomBtn" onclick="toggleZoom()">+</button>
+            <button onclick="openUploadModal()">POST</button>
+        </div>
+    </header>
+
+    <main>
+        <div id="gallery" data-columns="20">
+            <div class="loading-text">Loading archive...</div>
+        </div>
+    </main>
+
 </div>
 
-<!-- ============================================ --> 
-<!-- MODAL: OBJECT DETAIL --> 
-<!-- ============================================ -->
 <div id="objectModal" class="modal hidden">
-  <div class="modal-overlay" onclick="closeObjectModal()"></div>
-  <div class="modal-box">
-    <button class="close" onclick="closeObjectModal()">&#10094;</button>
-    <img id="modalImg" src="#" alt="Object" />
-    <div class="modal-info">
-      <h2 id="modalTitle"></h2>
-      <p id="modalStory"></p>
-      <p id="modalAuthor"></p>
-      <a id="modalLink" href="" target="_blank" class="modal-link hidden"> <span id="modalLinkText"></span> → </a> </div>
-  </div>
+    <div class="modal-overlay" onclick="closeObjectModal()"></div>
+    <div class="modal-box modal-detail">
+        <button class="close" onclick="closeObjectModal()">+</button>
+        <img id="modalImg" src="#" alt="Object Image">
+        <div class="content">
+            <h2 id="modalTitle">TITLE</h2>
+            <p id="modalStory">"Story"</p>
+            <p id="modalAuthor">— Author</p>
+            <a id="modalLink" href="#" target="_blank" class="hidden">
+                Link: <span id="modalLinkText"></span>
+            </a>
+        </div>
+    </div>
 </div>
 
-<!-- ============================================ --> 
-<!-- MODAL: UPLOAD + PAYMENT --> 
-<!-- ============================================ -->
+
+ 
+ 
 <div id="uploadModal" class="modal hidden">
-  <div class="modal-overlay" onclick="closeUploadModal()"></div>
-  <div class="modal-box modal-form">
-    <button class="close" onclick="closeUploadModal()">+</button>
-    <h2>POST YOUR PLACE</h2>
-    <form id="uploadForm">
-      <!-- LEFT: FORM -->
-      <div class="form-left"> 
-        <!-- PHOTO -->
-        <div class="form-section">
-          <div class="form-section-title">Your Favorite Place is ... </div>
-          <input type="file" id="photoUpload" accept="image/*" required style="display: none;" />
-          <label for="photoUpload" class="btn-upload">UPLOAD YOUR IMAGE</label>
-          <img id="imagePreview" class="hidden mt-4" style="max-width: 100%; border-radius: 8px;" alt="Preview"> </div>
-        <!-- CONTACT -->
-        <div class="form-section">
-          <div class="form-section-title">Contact Information</div>
-          <label>Email Address</label>
-          <input type="email" id="email" required placeholder="your@email.com" />
-        </div>
-        <!-- OBJECT DETAILS -->
-        <div class="form-section">
-          <div class="form-section-title">Details of your place</div>
-          <label>Name of your place </label>
-          <input type="text" id="titre" required maxlength="50" />
-          <label>Why This One?</label>
-          <input type="text" id="histoire" required maxlength="150" />
-          <label>Your Name</label>
-          <input type="text" id="prenom" required maxlength="30" />
-          <label>Country</label>
-          <input type="text" id="country" maxlength="50" />
-          <label>Link</label>
-          <input type="url" id="lien" placeholder="https://..." />
-        </div>
-      </div>
-      
-      <!-- RIGHT: SUMMARY + PAYMENT -->
-      <div class="form-right">
-        <div class="order-summary">
-          <h3>Order Summary</h3>
-          <div class="summary-line"> <span>One Object</span> <span id="displayPrice">€1</span> </div>
-          <div class="summary-line total"> <span>Total</span> <span id="displayPrice2">€1</span> </div>
-          <div class="price-section">
-            <label>Pay What You Want (Min €1)</label>
-            <div class="price-buttons">
-              <button type="button" class="btn-price selected" onclick="selectPrice(1, event)">€1</button>
-              <button type="button" class="btn-price" onclick="selectPrice(5, event)">€5</button>
-              <button type="button" class="btn-price" onclick="selectPrice(10, event)">€10</button>
-              <button type="button" class="btn-price" onclick="selectPrice(20, event)">€20</button>
-            </div>
-            <div class="selected-amount"> Your Contribution: <strong id="displayPrice3">€1</strong> </div>
-            <input type="number" id="customPrice" min="1" step="1" placeholder="Custom Amount" />
-            <input type="hidden" id="selectedPrice" value="1" />
-          </div>
-          <p class="note">All transactions are encrypted and secure</p>
-          <button type="submit" class="btn-submit">CONTINUE TO PAYMENT</button>
-        </div>
-      </div>
-    </form>
-  </div>
+  <div class="modal-overlay" onclick="closeUploadModal()"></div>
+  <div class="modal-box modal-form">
+    <button class="close" onclick="closeUploadModal()">+</button>
+    <h2>POST YOUR PLACE</h2>
+    <form id="uploadForm">
+            <div class="form-left"> 
+                <div class="form-section">
+          <div class="form-section-title">Your Favorite Place is ... </div>
+          
+          <input type="hidden" 
+            role="uploadcare-uploader" 
+            id="photoUploadCare" 
+            name="photoUploadCare" 
+            data-public-key="VOTRE_CLÉ_PUBLIQUE_UPLOADCARE"             data-crop="1:1" 
+            data-image-shrink="1080x1080" 
+            data-clearable="true" 
+            required 
+          />
+        </div>
+
+                <div class="form-section">
+          <div class="form-section-title">Title</div>
+          <input type="text" id="titre" required maxlength="100">
+        </div>
+
+                <div class="form-section">
+          <div class="form-section-title">Your Story (why this place?)</div>
+          <textarea id="histoire" required maxlength="500"></textarea>
+        </div>
+      </div>
+      
+            <div class="form-right">
+
+                <div class="form-section">
+          <div class="form-section-title">Your Name & City (Optional)</div>
+          <input type="text" id="prenom" placeholder="Your Name" maxlength="50">
+          <input type="text" id="country" placeholder="City/Country" maxlength="50">
+        </div>
+        
+                <div class="form-section">
+          <div class="form-section-title">Your Website / Social Link (Optional)</div>
+          <input type="text" id="lien" placeholder="https://">
+        </div>
+
+                <div class="form-section">
+          <div class="form-section-title">Your Email (for the receipt)</div>
+          <input type="email" id="email" required>
+        </div>
+
+                <div class="form-section">
+          <div class="form-section-title">Choose your price (min <span id="displayPrice">€1</span>)</div>
+          <div class="price-options">
+            <button type="button" class="btn-price selected" onclick="selectPrice(1, event)">€1</button>
+            <button type="button" class="btn-price" onclick="selectPrice(5, event)">€5</button>
+            <button type="button" class="btn-price" onclick="selectPrice(10, event)">€10</button>
+          </div>
+          <input type="number" id="customPrice" placeholder="Custom Amount (min €1)">
+          <input type="hidden" id="selectedPrice" value="1">
+        </div>
+
+                <button type="submit" class="btn-submit">
+          CONTINUE TO PAYMENT (<span id="displayPrice2">€1</span>)
+        </button>
+      </div>
+    </form>
+  </div>
 </div>
 
-<!-- ============================================ --> 
-<!-- SCRIPTS --> 
-<!-- ============================================ --> 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script> 
-<script src="https://js.stripe.com/v3/"></script> 
+
+ 
+ 
+ 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script> 
+<script src="https://js.stripe.com/v3/"></script> 
 <script src="js/main.js"></script>
 </body>
 </html>
