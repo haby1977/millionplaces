@@ -37,15 +37,18 @@ function enterSite() {
 }
 
 // ============================================
-// ZOOM ALLER-RETOUR
+// ZOOM ALLER-RETOUR (4 NIVEAUX)
 // ============================================
 let currentZoomIndex = 0
 let zoomDirection = 1
-const zoomLevels = [20, 10, 1]
+const zoomLevels = [20, 10, 5, 1]
+
 function toggleZoom() {
   const gallery = document.getElementById('gallery')
   const zoomBtn = document.getElementById('zoomBtn')
+  
   currentZoomIndex += zoomDirection
+  
   if (currentZoomIndex >= zoomLevels.length - 1) {
     currentZoomIndex = zoomLevels.length - 1
     zoomDirection = -1
@@ -53,6 +56,7 @@ function toggleZoom() {
     currentZoomIndex = 0
     zoomDirection = 1
   }
+  
   gallery.setAttribute('data-columns', zoomLevels[currentZoomIndex])
   zoomBtn.textContent = currentZoomIndex === 0 ? '+' : '-'
 }
@@ -94,10 +98,12 @@ async function loadGallery() {
         src: o.photo_url, alt: o.titre, loading: 'lazy'
       })
       if (i < 60) img.style.animationDelay = `${i * 0.03}s`
+      
       const desc = Object.assign(document.createElement('div'), { className: 'item-description' })
-      // Sans histoire, affichage simplifié
       desc.innerHTML = `<h3>${o.titre.toUpperCase()}</h3><p>${o.ville ? `— ${o.prenom}, ${o.ville}` : `— ${o.prenom}`}</p>${o.year ? `<p>${o.year}</p>` : ''}`
-      item.onclick = () => openObjectModal(o)
+      
+      // PAS DE ONCLICK - Seul le bouton zoom contrôle l'agrandissement
+      
       item.append(img, desc)
       gallery.appendChild(item)
     })
@@ -110,21 +116,6 @@ async function loadGallery() {
 // ============================================
 // MODALS
 // ============================================
-function openObjectModal(o) {
-  document.getElementById('modalImg').src = o.photo_url
-  document.getElementById('modalTitle').textContent = o.titre.toUpperCase()
-  document.getElementById('modalStory').textContent = o.year ? `Year: ${o.year}` : ''
-  document.getElementById('modalAuthor').textContent = o.ville ? `— ${o.prenom}, ${o.ville}` : `— ${o.prenom}`
-  const link = document.getElementById('modalLink')
-  if (o.lien) {
-    link.href = o.lien
-    link.classList.remove('hidden')
-    try { document.getElementById('modalLinkText').textContent = new URL(o.lien).hostname.replace('www.', '') }
-    catch { document.getElementById('modalLinkText').textContent = o.lien }
-  } else link.classList.add('hidden')
-  document.getElementById('objectModal').classList.remove('hidden')
-}
-const closeObjectModal = () => document.getElementById('objectModal').classList.add('hidden')
 const openUploadModal = () => document.getElementById('uploadModal').classList.remove('hidden')
 const closeUploadModal = () => document.getElementById('uploadModal').classList.add('hidden')
 
@@ -324,7 +315,7 @@ document.head.appendChild(style)
 // ============================================
 // ESC + INIT
 // ============================================
-document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeObjectModal(); closeUploadModal() } })
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeUploadModal() } })
 document.addEventListener('DOMContentLoaded', () => {
   console.log('Ready. Click ENTER.')
 })

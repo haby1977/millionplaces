@@ -58,14 +58,12 @@ transform: rotate(360deg);
         <h2>ABOUT</h2>
         <p>ONE MILLION PLACES is a net art project.</p>
         <p>We believe the internet lost its soul.</p>
-		 <p>No more algorithms. No more engagement metrics.</p>
-        <p>No more performance anxiety.</p>
+		<p>No more algorithms. No more engagement metrics.</p>
+        <p>No more performance or anxiety.</p>
         <p>Just one million people sharing their favorite place.</p>
-        <p>One photo. One story. Forever.</p>
+        <p>One photo turned in "Black &amp; White". One story. Forever.</p>
         <p>This is not a business. This is a collective monument.</p>
         <p>A time capsule. A trust experiment.</p>
-        <p>We charge €1-20 not for profit, but to cover costs and create commitment.</p>
-        <p>Your contribution keeps the archive alive.</p>
         <p>We don't moderate. We trust you. We believe humanity is worth the risk.</p>
         <p>Welcome to the slowest corner of the internet.</p>
       </section>
@@ -73,11 +71,10 @@ transform: rotate(360deg);
       <section class="loader-section">
         <h2>RULES</h2>
         <ol>
-          <li>Click on the basket</li>
+		  <li>Click the icon </li>
           <li>Upload your image.</li>
           <li>Size: min 800×800, max 1080×1080 (auto-resized)</li>
-          <li>Describe its story in a few words</li>
-          <li>Pay what you want (min €1) to upload</li>
+          <li>Complete the form.</li>
           <li>You can only participate once. Ever.</li>
         </ol>
       </section>
@@ -97,7 +94,7 @@ transform: rotate(360deg);
       <button class="btn-zoom" id="zoomBtn" onclick="toggleZoom()">+</button>
     </div>
     <div class="top-right">
-      <button class="btn-cart" onclick="openUploadModal()" aria-label="Open cart"></button>
+      <button class="btn-cart" onclick="openUploadModal()" aria-label="Open cart"><span class="material-symbols-outlined">upload</span></button>
     </div>
   </header>
   <!-- GRID -->
@@ -129,9 +126,9 @@ transform: rotate(360deg);
 <!-- ============================================ -->
 <div id="uploadModal" class="modal hidden">
   <div class="modal-overlay" onclick="closeUploadModal()"></div>
+	 <button class="close" onclick="closeUploadModal()">+</button>
   <div class="modal-box modal-form">
     <h2>ONE MILLION PLACES </h2>
-    <button class="close" onclick="closeUploadModal()">+</button>
     <form id="uploadForm">
       <!-- LEFT: FORM -->
       <div class="form-left"> 
@@ -163,8 +160,10 @@ transform: rotate(360deg);
           <input type="text" id="country" maxlength="50" />
           <label>Year</label>
           <input type="text" id="year" maxlength="4" />
+		  <!--
 		  <label>Link (optional)</label>
           <input type="url" id="lien" maxlength="100" placeholder="https://..." />
+          -->
         </div>
         
         <!-- PAS DE BOUTON ICI ! Il est dans previewContainer -->
