@@ -16,8 +16,8 @@ document.addEventListener('keydown', e => {
 // ============================================
 // CONFIGURATION
 // ============================================
-const SUPABASE_URL = 'https://krioqbogdddqxgzhqzh.supabase.co'
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtyaW9xYm9nb2RkcXhxenhoZ3poIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIyNzY0NzQsImV4cCI6MjA3Nzg1MjQ3NH0.VWCNPqGIVoHsp9u8LY-ZYNtCi0n7oTiSyj1JNo_L_W4'
+const SUPABASE_URL = 'https://stbnonxmyrvucauvdhzo.supabase.co'
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN0Ym5vbnhteXJ2dWNhdXZkaHpvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI1ODc3MzYsImV4cCI6MjA3ODE2MzczNn0.rJL2ZfFSVTQOS8uy6UuO0Lidqk48Zal6k2qSAqfHGFo'
 
 // Client Supabase pour la galerie et l'upload
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
