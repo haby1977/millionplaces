@@ -95,7 +95,8 @@ async function loadGallery() {
       })
       if (i < 60) img.style.animationDelay = `${i * 0.03}s`
       const desc = Object.assign(document.createElement('div'), { className: 'item-description' })
-      desc.innerHTML = `<h3>${o.titre.toUpperCase()}</h3><p><em>"${o.histoire}"</em></p><p>${o.ville ? `— ${o.prenom}, ${o.ville}` : `— ${o.prenom}`}</p>`
+      // Sans histoire, affichage simplifié
+      desc.innerHTML = `<h3>${o.titre.toUpperCase()}</h3><p>${o.ville ? `— ${o.prenom}, ${o.ville}` : `— ${o.prenom}`}</p>${o.year ? `<p>${o.year}</p>` : ''}`
       item.onclick = () => openObjectModal(o)
       item.append(img, desc)
       gallery.appendChild(item)
@@ -112,7 +113,7 @@ async function loadGallery() {
 function openObjectModal(o) {
   document.getElementById('modalImg').src = o.photo_url
   document.getElementById('modalTitle').textContent = o.titre.toUpperCase()
-  document.getElementById('modalStory').textContent = `"${o.histoire}"`
+  document.getElementById('modalStory').textContent = o.year ? `Year: ${o.year}` : ''
   document.getElementById('modalAuthor').textContent = o.ville ? `— ${o.prenom}, ${o.ville}` : `— ${o.prenom}`
   const link = document.getElementById('modalLink')
   if (o.lien) {
@@ -178,10 +179,18 @@ document.getElementById('photoUpload')?.addEventListener('change', e => {
     if (!optFile) return
     optimizedImageFile = optFile
     const preview = document.getElementById('imagePreview')
+    const container = document.getElementById('previewContainer')
+    
     if (preview) {
       preview.src = previewUrl
       preview.classList.remove('hidden')
     }
+    
+    // Affiche le container avec l'image ET le bouton submit
+    if (container) {
+      container.classList.remove('hidden')
+    }
+    
     const sizeKB = (optFile.size / 1024).toFixed(0)
     showAlert(`Image optimisée (${sizeKB} KB, format carré 1080×1080)`, 'SUCCESS')
   })
@@ -206,10 +215,10 @@ document.getElementById('uploadForm')?.addEventListener('submit', async e => {
 
   const email = document.getElementById('email').value.trim()
   const titre = document.getElementById('titre').value.trim()
-  const histoire = document.getElementById('histoire').value.trim()
   const prenom = document.getElementById('prenom').value.trim()
   const country = document.getElementById('country').value.trim()
-  let lien = document.getElementById('lien').value.trim()
+  const year = document.getElementById('year').value.trim()
+  let lien = document.getElementById('lien')?.value.trim() || ''
   if (lien && !/^https?:\/\//i.test(lien)) lien = 'https://' + lien
 
   try {
@@ -253,8 +262,9 @@ document.getElementById('uploadForm')?.addEventListener('submit', async e => {
         titre,
         prenom,
         ville: country,
-        lien,
         year,
+        lien,
+        photo_url,
         created_at: new Date().toISOString()
       }])
 
@@ -266,7 +276,10 @@ document.getElementById('uploadForm')?.addEventListener('submit', async e => {
     
     // Réinitialiser le formulaire
     document.getElementById('uploadForm').reset()
-    document.getElementById('imagePreview').classList.add('hidden')
+    const preview = document.getElementById('imagePreview')
+    const container = document.getElementById('previewContainer')
+    if (preview) preview.classList.add('hidden')
+    if (container) container.classList.add('hidden')
     optimizedImageFile = null
     
     // Recharger la galerie
@@ -281,7 +294,7 @@ document.getElementById('uploadForm')?.addEventListener('submit', async e => {
 
   function resetBtn() {
     btn.disabled = false
-    btn.textContent = 'SHARE YOUR PLACE'
+    btn.textContent = 'SUBMIT YOUR PLACE'
     btn.classList.remove('loading')
     isSubmitting = false
   }

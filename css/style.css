@@ -387,14 +387,22 @@ body {
     overflow-y: auto;
     z-index: 2001;
 }
+/* Ajoute une nouvelle classe pour wrapper le header */
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.modal-header h2 {
+    margin: 0;
+}
+
 .close {
     position: absolute;
-    /* --- Changements pour le centrage --- */
-    top: 0;             /* Garde une marge de 18px du haut */
-    left: 50%;             /* Déplace le point de départ au milieu de l'écran */
-    transform: translateX(-50%); /* Déplace le bouton de la moitié de sa propre largeur vers la gauche */
-    right: auto;           /* Supprime l'ancienne propriété 'right' */
-    /* ------------------------------------- */
+    top: 65px;
+    right: 18px;
     background: transparent;
     border: none;
     color: var(--text-color);
@@ -405,6 +413,7 @@ body {
     transition: transform 0.3s ease;
     padding: 0;
 }
+
 .close:hover {
     opacity: 0.7;
 }
@@ -573,6 +582,51 @@ body {
     height: 60px;
     object-fit: contain;
 }
+
+.preview-container {
+    display: flex;
+    gap: 20px;
+    margin-top:0 ;
+    align-items: center;  /* Centre verticalement */
+    justify-content: space-between;  /* Espace entre l'image et le bouton */
+}
+
+.preview-container.hidden {
+    display: none;
+}
+
+.preview-container img {
+    max-width: 15%;
+    height: auto;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.preview-container .btn-submit {
+    padding: 12px 30px;
+    background-color: var(--text-color);
+    color: var(--bg-color);
+    border: 1px solid var(--text-color);
+    cursor: pointer;
+    font-size: var(--text-color-small);
+	font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    margin-right: auto;  /* Pousse le bouton à gauche */
+}
+
+.preview-container .btn-submit:hover {
+    background-color: transparent;
+    color: var(--text-color);
+}
+
+.preview-container .btn-submit:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 .btn-upload {
     display: inline-block;
     padding: 12px 24px;
@@ -614,6 +668,30 @@ body {
     padding-top: 15px;
     margin-top: 20px;
     font-weight: 400;
+}
+
+.btn-submit {
+     display: inline-block;
+    padding: 12px 24px;
+    background: var(--text-color);
+    color: var(--bg-color);
+	border: 1px solid var(--text-color);
+	max-width: 200px;
+    cursor: pointer;
+    font-weight: bold;
+    text-align: center;
+    transition: all 0.2s;
+    font-family: inherit;
+}
+
+.btn-submit:hover {
+    background-color: transparent;
+    color: var(--text-color);
+}
+
+.btn-submit:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 /*
 .price-section {
@@ -674,40 +752,6 @@ body {
     opacity: 0.7;
     font-style: italic;
 }
-.btn-submit {
-    width: 100%;
-    padding: 18px;
-    background: var(--bg-color);
-    color: var(--text-color);
-    font-size: 11px;
-    border: 1px solid var(--bg-color);
-    cursor: pointer;
-    font-family: "scandia-line-web", sans-serif;
-    text-transform: uppercase;
-    letter-spacing: 0.2em;
-    transition: all 0.2s;
-    margin-top: 20px;
-}
-.btn-submit:hover {
-    background: var(--text-color);
-    color: var(--bg-color);
-}
-.btn-submit.loading::after {
-    content: "";
-    display: inline-block;
-    width: 12px;
-    height: 12px;
-    border: 2px solid transparent;
-    border-top: 2px solid #FDFFFC;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    margin-left: 10px;
-}
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
 */
 /* RESPONSIVE */
 @media (max-width: 968px) {
@@ -743,4 +787,7 @@ body {
     .grid[data-columns="10"] {
         grid-template-columns: repeat(3, 1fr);
     }
+.close {
+    top: 63px;
+}
 }
