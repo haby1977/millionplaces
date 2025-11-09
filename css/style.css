@@ -648,10 +648,6 @@ font-weight:500;
 	.loader-content{
 	margin-top: -50px;
 	}
-	
-	.endpoint-xs{
-	margin-bottom: 20px;
-	}
 		
 .grid[data-columns="1"] .grid-item img {
     max-height: 50vh;
