@@ -26,9 +26,26 @@ body {
     font-family: "scandia-line-web", sans-serif;
     background: var(--bg-color);
     color: var(--text-color);
-    overflow-y: none;
     line-height: 1.4;
     font-size: var(--font-size-base);
+}
+body.no-scroll {
+  /* 1. Cache la barre de défilement */
+  overflow: hidden; 
+  
+  /* 2. Ancre la vue (viewport) et empêche le "tirer-pour-rafraîchir" sur iOS/Android */
+  position: fixed; 
+  
+  /* 3. S'assure que le body est bien positionné au début de la fenêtre */
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  
+  /* 4. Fixe l'élément sur la fenêtre entière */
+  height: 100%;
+  width: 100%;
+  padding-right: 17px; /* Compense la largeur de la barre de défilement de l'OS */
 }
 .hidden {
     display: none !important;
@@ -608,17 +625,10 @@ font-weight:500;
     }
 }
 @media (max-width: 480px) {
-	.modal {
-   margin-top: -50px;
-}
+
 	.close{
-    top:50px;
+    top:0px;
 	}
-	
-.loader-content {
-    margin-top: -50px;
-	overflow: hidden;
-}
 		
 .grid[data-columns="1"] .grid-item img {
     max-height: 50vh;
