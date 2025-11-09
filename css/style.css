@@ -69,7 +69,8 @@ body.no-scroll {
     max-width: 600px;
     width: 100%;
     max-height: 100vh;
-    overflow-y: auto;
+    overflow-y: hidden;
+	overflow-x: hidden;
     padding: 20px 20px;
     text-align: center;
 }
@@ -628,6 +629,10 @@ font-weight:500;
 
 	.close{
     top:0px;
+	}
+	
+	.loader-content{
+	margin-top: -30px;
 	}
 		
 .grid[data-columns="1"] .grid-item img {
