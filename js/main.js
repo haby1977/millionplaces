@@ -91,7 +91,6 @@ function shuffleArray(arr) {
 
 async function loadGallery() {
   try {
-    // APPEL DIRECT À SUPABASE - PAS DE PROXY
     const { data: objets, error } = await supabase
       .from('objets')
       .select('*')
@@ -113,12 +112,10 @@ async function loadGallery() {
       const img = Object.assign(document.createElement('img'), {
         src: o.photo_url, alt: o.titre, loading: 'lazy'
       })
-      if (i < 60) img.style.animationDelay = `${i * 0.03}s`
+      // ? LIGNE SUPPRIMÉE ICI
       
       const desc = Object.assign(document.createElement('div'), { className: 'item-description' })
       desc.innerHTML = `<h3>${o.titre.toUpperCase()}</h3><p>${o.ville ? `— ${o.prenom}, ${o.ville}` : `— ${o.prenom}`}</p>${o.year ? `<p>${o.year}</p>` : ''}`
-      
-      // PAS DE ONCLICK - Seul le bouton zoom contrôle l'agrandissement
       
       item.append(img, desc)
       gallery.appendChild(item)
