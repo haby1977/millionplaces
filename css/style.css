@@ -29,6 +29,20 @@ body {
     line-height: 1.4;
     font-size: var(--font-size-base);
 }
+
+* {
+    touch-action: pan-y pan-x;
+    -ms-touch-action: pan-y pan-x;
+}
+
+html, body {
+    overscroll-behavior: none;
+    -webkit-text-size-adjust: 100%;
+    -moz-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+}
+
 body.no-scroll {
   /* 1. Cache la barre de défilement */
   overflow: hidden; 
