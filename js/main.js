@@ -31,9 +31,25 @@ let optimizedImageFile = null
 // LOADER ? SITE
 // ============================================
 function enterSite() {
-  document.getElementById('loaderPage').classList.add('hidden')
-  document.getElementById('mainSite').classList.remove('hidden')
-  loadGallery()
+  const loader = document.getElementById('loaderPage')
+  const site = document.getElementById('mainSite')
+  
+  // Fade out du loader
+  loader.classList.add('fade-out')
+  
+  // Enlever hidden du site et démarrer fade in
+  site.classList.remove('hidden')
+  
+  // Petit délai pour que le CSS prenne effet
+  setTimeout(() => {
+    site.classList.add('fade-in')
+    loadGallery()
+  }, 50)
+  
+  // Cacher définitivement le loader après la transition
+  setTimeout(() => {
+    loader.classList.add('hidden')
+  }, 1500)
 }
 
 // ============================================
@@ -140,6 +156,7 @@ function optimizeAndPreview(file, cb) {
       const minDim = Math.min(img.width, img.height)
       const cropX = (img.width - minDim) / 2
       const cropY = (img.height - minDim) / 2
+	  ctx.filter = 'grayscale(100%)'
       ctx.drawImage(img, cropX, cropY, minDim, minDim, 0, 0, SIZE, SIZE)
       const previewUrl = c.toDataURL('image/webp', 0.85)
       c.toBlob(b => {
