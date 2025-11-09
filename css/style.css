@@ -598,7 +598,7 @@ font-weight:500;
     background: var(--text-color);
     color: var(--bg-color);
     border: 1px solid var(--text-color);
-    max-width: 220px;
+    max-width: 110px;
     cursor: pointer;
     font-weight: bold;
     text-align: center;
