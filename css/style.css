@@ -341,6 +341,8 @@ font-weight:500;
     height: 100%;
     object-fit: cover;
     transition: transform 0.3s;
+	filter: grayscale(100%);
+    -webkit-filter: grayscale(100%);
 }
 
 .grid-item:hover img {
@@ -613,11 +615,52 @@ font-weight:500;
     opacity: 0.5;
     cursor: not-allowed;
 }
-/* RESPONSIVE */
-@media (max-width: 968px) {
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+/* Marge en bas pour la dernière image en mode 1 colonne */
+.grid[data-columns="1"] .grid-item:last-child {
+    margin-bottom: 40px;
+}
+
+/* TABLETTES (iPad portrait et paysage) */
+@media (max-width: 1024px) {
+    .grid[data-columns="20"] {
+        grid-template-columns: repeat(12, 1fr);
+    }
+    .grid[data-columns="10"] {
+        grid-template-columns: repeat(8, 1fr);
+    }
+    .grid[data-columns="5"] {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+/* MOBILE LARGE (iPhone Plus, Samsung Galaxy) */
+@media (max-width: 768px) {
+    .grid[data-columns="20"] {
+        grid-template-columns: repeat(8, 1fr);
+    }
+    .grid[data-columns="10"] {
+        grid-template-columns: repeat(6, 1fr);
+    }
+    .grid[data-columns="5"] {
+        grid-template-columns: repeat(4, 1fr);
+    }
+    
+    .top-bar {
+        height: 50px;
+    }
+    
+    .modal-form {
+        padding: 40px 20px !important;
+    }
+    
     .modal-form form {
         grid-template-columns: 1fr;
     }
+    
     .form-right {
         border-left: none;
         border-top: 1px solid var(--text-color);
@@ -625,47 +668,91 @@ font-weight:500;
         padding-top: 40px;
     }
 }
-@media (max-width: 768px) {
+
+/* MOBILE STANDARD (iPhone 14/15, Pixel) */
+@media (max-width: 480px) {
     .grid[data-columns="20"] {
-        grid-template-columns: repeat(8, 1fr);
+        grid-template-columns: repeat(6, 1fr);
     }
     .grid[data-columns="10"] {
-        grid-template-columns: repeat(5, 1fr);
+        grid-template-columns: repeat(4, 1fr);
     }
     .grid[data-columns="5"] {
         grid-template-columns: repeat(3, 1fr);
     }
-    .top-bar {
-        height: 45px;
+    
+    .grid[data-columns="1"] {
+        padding: 15px;
+    }
+    
+    .grid[data-columns="1"] .grid-item img {
+        max-height: 60vh;
+        object-fit: contain;
+    }
+    
+    .close {
+        top: 0px;
+    }
+    
+    .loader-content {
+        padding: 15px;
+    }
+    
+    .modal-form {
+        max-width: 100% !important;
+        padding: 30px 15px !important;
+    }
+    
+    .modal-form h2 {
+        font-size: 12px;
+        margin-bottom: 20px;
     }
 }
-@media (max-width: 480px) {
 
-	.close{
-    top:0px;
-	}
-	
-	.loader-content{
-	margin-top: -50px;
-	}
-		
-.grid[data-columns="1"] .grid-item img {
-    max-height: 50vh;
-    object-fit: contain;
+/* MOBILE PETIT (iPhone SE, petits Android) */
+@media (max-width: 375px) {
+    .grid[data-columns="20"] {
+        grid-template-columns: repeat(5, 1fr);
+    }
+    .grid[data-columns="10"] {
+        grid-template-columns: repeat(4, 1fr);
+    }
+    .grid[data-columns="5"] {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    
+    .count {
+        font-size: 12px;
+    }
+    
+    .btn-enter {
+        padding: 12px 30px;
+        font-size: 11px;
+    }
 }
-  .grid[data-columns="20"] {
-    grid-template-columns: repeat(20, 1fr);
+
+/* iPad PORTRAIT spécifique */
+@media (min-width: 768px) and (max-width: 834px) and (orientation: portrait) {
+    .grid[data-columns="20"] {
+        grid-template-columns: repeat(10, 1fr);
+    }
+    .grid[data-columns="10"] {
+        grid-template-columns: repeat(7, 1fr);
+    }
+    .grid[data-columns="5"] {
+        grid-template-columns: repeat(5, 1fr);
+    }
 }
-.grid[data-columns="10"] {
-    grid-template-columns: repeat(10, 1fr);
-}
-.grid[data-columns="5"] {
-    grid-template-columns: repeat(5, 1fr);
-}
-.grid[data-columns="1"] {
-    grid-template-columns: 1fr;
-    padding: 20px;
-    gap: 0px;
-}
-	
+
+/* iPad LANDSCAPE spécifique */
+@media (min-width: 1024px) and (max-width: 1366px) and (orientation: landscape) {
+    .grid[data-columns="20"] {
+        grid-template-columns: repeat(15, 1fr);
+    }
+    .grid[data-columns="10"] {
+        grid-template-columns: repeat(10, 1fr);
+    }
+    .grid[data-columns="5"] {
+        grid-template-columns: repeat(6, 1fr);
+    }
 }

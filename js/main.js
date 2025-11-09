@@ -204,41 +204,75 @@ const closeUploadModal = () => {
 }
 
 // ============================================
-// IMAGE OPTIMIZATION / CROP CARRÉ CENTRÉ
+// IMAGE OPTIMIZATION / CROP CARRÉ CENTRÉ + N&B + GRAIN
 // ============================================
 function optimizeAndPreview(file, cb) {
-  const reader = new FileReader()
-  reader.onload = e => {
-    const img = new Image()
-    img.onload = () => {
-      const SIZE = 1080
-      const MIN = 800
-      if (img.width < MIN && img.height < MIN) {
-        showAlert(`Image trop petite (min ${MIN}px)`, 'ERROR')
-        return cb(null)
-      }
-      const c = document.createElement('canvas')
-      const ctx = c.getContext('2d')
-      c.width = SIZE
-      c.height = SIZE
-      const minDim = Math.min(img.width, img.height)
-      const cropX = (img.width - minDim) / 2
-      const cropY = (img.height - minDim) / 2
-      ctx.filter = 'grayscale(100%)'
-      ctx.drawImage(img, cropX, cropY, minDim, minDim, 0, 0, SIZE, SIZE)
-      const previewUrl = c.toDataURL('image/webp', 0.85)
-      c.toBlob(b => {
-        if (!b) {
-          showAlert('Erreur pendant la compression', 'ERROR')
-          return cb(null)
-        }
-        const optFile = new File([b], 'opt.webp', { type: 'image/webp' })
-        cb(optFile, previewUrl)
-      }, 'image/webp', 0.85)
-    }
-    img.src = e.target.result
-  }
-  reader.readAsDataURL(file)
+  const reader = new FileReader()
+  reader.onload = e => {
+    const img = new Image()
+    img.onload = () => {
+      const SIZE = 1080
+      const MIN = 800
+      if (img.width < MIN && img.height < MIN) {
+        showAlert(`Image trop petite (min ${MIN}px)`, 'ERROR')
+        return cb(null)
+      }
+      
+      // Création du canvas
+      const c = document.createElement('canvas')
+      const ctx = c.getContext('2d')
+      c.width = SIZE
+      c.height = SIZE
+      
+      // Calcul du crop carré centré
+      const minDim = Math.min(img.width, img.height)
+      const cropX = (img.width - minDim) / 2
+      const cropY = (img.height - minDim) / 2
+      
+      // Dessiner l'image croppée et resizée
+      ctx.drawImage(img, cropX, cropY, minDim, minDim, 0, 0, SIZE, SIZE)
+      
+      // CONVERSION NOIR & BLANC PIXEL PAR PIXEL
+      const imageData = ctx.getImageData(0, 0, SIZE, SIZE)
+      const data = imageData.data
+      
+      for (let i = 0; i < data.length; i += 4) {
+        const gray = data[i] * 0.299 + data[i + 1] * 0.587 + data[i + 2] * 0.114
+        data[i] = gray
+        data[i + 1] = gray
+        data[i + 2] = gray
+      }
+      
+      // AJOUT DU GRAIN PHOTOGRAPHIQUE
+      const GRAIN_INTENSITY = 11 // Ajuste entre 5 (léger) et 30 (fort)
+      
+      for (let i = 0; i < data.length; i += 4) {
+        // Génère un bruit aléatoire pour chaque pixel
+        const noise = (Math.random() - 0.5) * GRAIN_INTENSITY
+        
+        // Applique le bruit sur RGB (pas sur alpha)
+        data[i] = Math.max(0, Math.min(255, data[i] + noise))       // R
+        data[i + 1] = Math.max(0, Math.min(255, data[i + 1] + noise)) // G
+        data[i + 2] = Math.max(0, Math.min(255, data[i + 2] + noise)) // B
+      }
+      
+      // Remettre les pixels modifiés sur le canvas
+      ctx.putImageData(imageData, 0, 0)
+      
+      // Générer la preview et le fichier
+      const previewUrl = c.toDataURL('image/webp', 0.85)
+      c.toBlob(b => {
+        if (!b) {
+          showAlert('Erreur pendant la compression', 'ERROR')
+          return cb(null)
+        }
+        const optFile = new File([b], 'opt.webp', { type: 'image/webp' })
+        cb(optFile, previewUrl)
+      }, 'image/webp', 0.85)
+    }
+    img.src = e.target.result
+  }
+  reader.readAsDataURL(file)
 }
 
 // ============================================
