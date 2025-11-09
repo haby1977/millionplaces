@@ -54,7 +54,7 @@ body {
     max-height: 100vh;
     overflow-y: auto;
     padding: 20px 20px;
-    text-align: left;
+    text-align: center;
 }
 .loader-title {
     font-size: var(--font-size-title);
@@ -63,13 +63,14 @@ body {
     text-align: left;
     margin-bottom: 20px;
     animation: polaroidReveal 1.2s ease-out;
+	text-align: center;
+	
 }
 .loader-sections {
     display: flex;
     flex-direction: column;
     gap: 10px;
     margin-bottom: 10px;
-    text-align: left;
 }
 .loader-section {
     animation: polaroidReveal 1.5s ease-out both;
@@ -85,26 +86,19 @@ body {
     margin-bottom: 5px;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    font-weight: 400;
+    font-weight: 500;
     padding-bottom: 8px;
+	text-align: center;
 }
 .loader-section p {
     font-size: var(--font-size-base);
     line-height: 1.5;
     margin-bottom: 10px;
-}
-.loader-section ol {
-    list-style: none;
-}
-.loader-section li {
-    font-size: var(--font-size-base);
-    line-height: 1.5;
-    margin-bottom: 12px;
+	text-align: center;
 }
 .btn-enter {
     background: none;
     border: none;
-    text-align: left;
     color: var(--text-color);
     font-size: var(--font-size-medium);
     text-transform: uppercase;
@@ -114,6 +108,7 @@ body {
     cursor: pointer;
     transition: var(--transition-normal);
     animation: polaroidReveal 1.5s ease-out 1.2s both;
+	text-align: center;
 }
 .btn-enter:hover {
     background: var(--text-color);
@@ -260,6 +255,13 @@ body {
     28% { transform: scale(1); }
     42% { transform: scale(1.10); }
     70% { transform: scale(1); }
+}
+/*link*/
+a{
+color:var(--text-color);
+text-decoration: underline;
+font-size: var(--font-size-base);
+font-weight:500;
 }
 /* GRID */
 .grid-container {
