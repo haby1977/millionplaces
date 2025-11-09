@@ -550,8 +550,8 @@ font-weight:500;
 }
 .preview-container .btn-submit {
     padding: 12px 30px;
-    background-color: var(--text-color);
-    color: var(--bg-color);
+    background-color: var(--bg-color);
+    color: var(--text-color);
     border: 1px solid var(--text-color);
     cursor: pointer;
     font-size: 11px;
@@ -595,8 +595,8 @@ font-weight:500;
 .btn-submit {
     display: inline-block;
     padding: 12px 24px;
-    background: var(--text-color);
-    color: var(--bg-color);
+    background: var(--bg-color);
+    color: var(--tex-color);
     border: 1px solid var(--text-color);
     max-width: 110px;
     cursor: pointer;
@@ -606,8 +606,8 @@ font-weight:500;
     font-family: inherit;
 }
 .btn-submit:hover {
-    background-color: transparent;
-    color: var(--text-color);
+    background-color: var(--text-color);
+    color: var(--bg-color);
 }
 .btn-submit:disabled {
     opacity: 0.5;
