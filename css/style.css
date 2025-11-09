@@ -327,6 +327,10 @@ font-weight:500;
     padding: 20px;
     gap: 0;
 }
+	/* Marge en bas pour la dernière image en mode 1 colonne */
+    .grid[data-columns="1"] .grid-item:last-child {
+        margin-bottom: 0;
+    }
 .grid-item {
     aspect-ratio: 1;
     background: var(--bg-color);
@@ -619,11 +623,6 @@ font-weight:500;
    RESPONSIVE
    ============================================ */
 
-/* Marge en bas pour la dernière image en mode 1 colonne */
-.grid[data-columns="1"] .grid-item:last-child {
-    margin-bottom: 90px;
-}
-
 /* TABLETTES (iPad portrait et paysage) */
 @media (max-width: 1024px) {
     .grid[data-columns="20"] {
@@ -652,6 +651,10 @@ font-weight:500;
     .grid[data-columns="5"] {
         grid-template-columns: repeat(4, 1fr);
     }
+	.grid[data-columns="1"] .grid-item img {
+    max-height: 50vh;
+    object-fit: contain;
+}
     
     .top-bar {
         height: 50px;
@@ -702,6 +705,10 @@ font-weight:500;
     .grid[data-columns="1"] .grid-item:last-child {
         margin-bottom: 90px;
     }
+	.grid[data-columns="1"] .grid-item img {
+    max-height: 50vh;
+    object-fit: contain;
+}
     .close {
         top: 0px;
     }
@@ -761,6 +768,10 @@ font-weight:500;
     .grid[data-columns="1"] .grid-item:last-child {
         margin-bottom: 20px;
     }
+	.grid[data-columns="1"] .grid-item img {
+    max-height: 50vh;
+    object-fit: contain;
+}
 }
 
 /* iPad LANDSCAPE spécifique */
@@ -776,6 +787,6 @@ font-weight:500;
     }
 		/* Marge en bas pour la dernière image en mode 1 colonne */
     .grid[data-columns="1"] .grid-item:last-child {
-        margin-bottom: 20px;
+        margin-bottom: 0;
     }
 }
