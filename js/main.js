@@ -197,7 +197,7 @@ document.getElementById('photoUpload')?.addEventListener('change', e => {
     }
     
     const sizeKB = (optFile.size / 1024).toFixed(0)
-    showAlert(`Image optimisée ({sizeKB} KB, format carré 1080x1080)`, 'SUCCESS')
+    showAlert('SUCCESS')
   })
 })
 
@@ -209,7 +209,7 @@ document.getElementById('uploadForm')?.addEventListener('submit', async e => {
   e.preventDefault()
   if (isSubmitting) return
   if (!optimizedImageFile) {
-    showAlert('Image requise', 'ERROR')
+    showAlert('ERROR')
     return
   }
   isSubmitting = true
@@ -292,7 +292,7 @@ document.getElementById('uploadForm')?.addEventListener('submit', async e => {
     
   } catch (err) {
     console.error('Erreur upload:', err)
-    showAlert('Erreur. Réessayez.', 'ERROR')
+    showAlert('ERROR')
   } finally {
     resetBtn()
   }

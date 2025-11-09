@@ -46,7 +46,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    overflow: scroll;
+    overflow: none;
 }
 .loader-content {
     max-width: 600px;
@@ -438,7 +438,6 @@ font-weight:500;
     overflow-y: auto; 
     z-index: 2001;
 }
-
 /* Votre grille 1fr 2fr pour les colonnes du formulaire */
 .modal-form form {
     display: grid;
@@ -609,13 +608,18 @@ font-weight:500;
     }
 }
 @media (max-width: 480px) {
-    .modal {
-        top: 9.5px;
-    }
+	.modal {
+   margin-top: -50px;
+}
 	.close{
-    top:-10px;
+    top:50px;
 	}
 	
+.loader-content {
+    margin-top: -50px;
+	overflow: hidden;
+}
+		
 .grid[data-columns="1"] .grid-item img {
     max-height: 50vh;
     object-fit: contain;
@@ -632,7 +636,7 @@ font-weight:500;
 .grid[data-columns="1"] {
     grid-template-columns: 1fr;
     padding: 20px;
-    gap: 20px;
+    gap: 0px;
 }
 	
 }
