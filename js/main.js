@@ -1,4 +1,4 @@
-// ============================================
+ï»¿// ============================================
 // ANTI-ZOOM (TOUS LES VIEWPORTS)
 // ============================================
 document.addEventListener('touchstart', e => { if (e.touches.length > 1) e.preventDefault() }, { passive: false })
@@ -23,12 +23,12 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
 // ============================================
-// VARIABLE GLOBALE POUR L'IMAGE OPTIMISÉE
+// VARIABLE GLOBALE POUR L'IMAGE OPTIMISÃ‰E
 // ============================================
 let optimizedImageFile = null
 
 // ============================================
-// LOADER ? SITE
+// LOADER
 // ============================================
 function enterSite() {
   const loader = document.getElementById('loaderPage')
@@ -37,16 +37,16 @@ function enterSite() {
   // Fade out du loader
   loader.classList.add('fade-out')
   
-  // Enlever hidden du site et démarrer fade in
+  // Enlever hidden du site et dÃ©marrer fade in
   site.classList.remove('hidden')
   
-  // Petit délai pour que le CSS prenne effet
+  // Petit dÃ©lai pour que le CSS prenne effet
   setTimeout(() => {
     site.classList.add('fade-in')
     loadGallery()
   }, 50)
   
-  // Cacher définitivement le loader après la transition
+  // Cacher dÃ©finitivement le loader aprÃ¨s la transition
   setTimeout(() => {
     loader.classList.add('hidden')
   }, 1500)
@@ -112,10 +112,10 @@ async function loadGallery() {
       const img = Object.assign(document.createElement('img'), {
         src: o.photo_url, alt: o.titre, loading: 'lazy'
       })
-      // ? LIGNE SUPPRIMÉE ICI
+      // LIGNE SUPPRIMÃ‰E ICI
       
       const desc = Object.assign(document.createElement('div'), { className: 'item-description' })
-      desc.innerHTML = `<h3>${o.titre.toUpperCase()}</h3><p>${o.ville ? `— ${o.prenom}, ${o.ville}` : `— ${o.prenom}`}</p>${o.year ? `<p>${o.year}</p>` : ''}`
+      desc.innerHTML = `<h3>${o.titre.toUpperCase()}</h3><p>${o.ville ? `? ${o.prenom}, ${o.ville}` : `? ${o.prenom}`}</p>${o.year ? `<p>${o.year}</p>` : ''}`
       
       item.append(img, desc)
       gallery.appendChild(item)
@@ -133,7 +133,7 @@ const openUploadModal = () => document.getElementById('uploadModal').classList.r
 const closeUploadModal = () => document.getElementById('uploadModal').classList.add('hidden')
 
 // ============================================
-// IMAGE OPTIMIZATION — CROP CARRÉ CENTRÉ
+// IMAGE OPTIMIZATION / CROP CARRÃ‰ CENTRÃ‰
 // ============================================
 function optimizeAndPreview(file, cb) {
   const reader = new FileReader()
@@ -143,7 +143,7 @@ function optimizeAndPreview(file, cb) {
       const SIZE = 1080
       const MIN = 800
       if (img.width < MIN && img.height < MIN) {
-        showAlert(`Image trop petite (min ${MIN}px sur un côté)`, 'ERROR')
+        showAlert(`Image trop petite (min ${MIN}px)`, 'ERROR')
         return cb(null)
       }
       const c = document.createElement('canvas')
@@ -177,7 +177,7 @@ document.getElementById('photoUpload')?.addEventListener('change', e => {
   const file = e.target.files[0]
   if (!file) return
   if (!file.type.startsWith('image/')) {
-    showAlert('Fichier doit être une image', 'ERROR')
+    showAlert('Fichier doit Ãªtre une image', 'ERROR')
     return
   }
   optimizeAndPreview(file, (optFile, previewUrl) => {
@@ -191,18 +191,18 @@ document.getElementById('photoUpload')?.addEventListener('change', e => {
       preview.classList.remove('hidden')
     }
     
-    // Affiche le container avec l'image ET le bouton submit
+    // Affiche le container avec l'image et le bouton submit
     if (container) {
       container.classList.remove('hidden')
     }
     
     const sizeKB = (optFile.size / 1024).toFixed(0)
-    showAlert(`Image optimisée (${sizeKB} KB, format carré 1080×1080)`, 'SUCCESS')
+    showAlert(`Image optimisÃ©e ({sizeKB} KB, format carrÃ© 1080x1080)`, 'SUCCESS')
   })
 })
 
 // ============================================
-// SUBMIT (SIMPLIFIÉ - DIRECT UPLOAD)
+// SUBMIT (SIMPLIFIÃ‰ - DIRECT UPLOAD)
 // ============================================
 let isSubmitting = false
 document.getElementById('uploadForm')?.addEventListener('submit', async e => {
@@ -219,15 +219,15 @@ document.getElementById('uploadForm')?.addEventListener('submit', async e => {
   btn.classList.add('loading')
 
   const email = document.getElementById('email').value.trim()
-  const titre = document.getElementById('titre').value.trim()
   const prenom = document.getElementById('prenom').value.trim()
+  const titre = document.getElementById('titre').value.trim()
   const country = document.getElementById('country').value.trim()
   const year = document.getElementById('year').value.trim()
   let lien = document.getElementById('lien')?.value.trim() || ''
   if (lien && !/^https?:\/\//i.test(lien)) lien = 'https://' + lien
 
   try {
-    // 1. Vérifier si l'email existe déjà
+    // 1. VÃ©rifier si l'email existe dÃ©jÃ ?
     const { data: existing, error } = await supabase
       .from('objets')
       .select('email')
@@ -236,7 +236,7 @@ document.getElementById('uploadForm')?.addEventListener('submit', async e => {
     
     if (error) throw error
     if (existing && existing.length > 0) {
-      showAlert('Déjà participé !', 'ERROR')
+      showAlert('DÃ©jÃ  participÃ© !', 'ERROR')
       resetBtn()
       return
     }
@@ -252,20 +252,20 @@ document.getElementById('uploadForm')?.addEventListener('submit', async e => {
     
     if (uploadError) throw uploadError
 
-    // 3. Récupérer l'URL publique
+    // 3. RÃ©cupÃ©rer l'URL publique
     const { data: publicUrlData } = supabase.storage
       .from('photos')
       .getPublicUrl(fileName)
 
     const photo_url = publicUrlData.publicUrl
 
-    // 4. Insérer dans la base de données
+    // 4. InsÃ©rer dans la base de donnÃ©es
     const { error: insertError } = await supabase
       .from('objets')
       .insert([{
         email,
+		prenom,
         titre,
-        prenom,
         ville: country,
         year,
         lien,
@@ -275,11 +275,11 @@ document.getElementById('uploadForm')?.addEventListener('submit', async e => {
 
     if (insertError) throw insertError
 
-    // 5. Succès !
-    showAlert('Votre lieu a été ajouté avec succès !', 'SUCCESS')
+    // 5. SuccÃ¨s !
+    showAlert('Votre lieu a Ã©tÃ© ajoutÃ© avec succÃ¨s !', 'SUCCESS')
     closeUploadModal()
     
-    // Réinitialiser le formulaire
+    // RÃ©initialiser le formulaire
     document.getElementById('uploadForm').reset()
     const preview = document.getElementById('imagePreview')
     const container = document.getElementById('previewContainer')
@@ -292,7 +292,7 @@ document.getElementById('uploadForm')?.addEventListener('submit', async e => {
     
   } catch (err) {
     console.error('Erreur upload:', err)
-    showAlert('Erreur. Réessayez.', 'ERROR')
+    showAlert('Erreur. RÃ©essayez.', 'ERROR')
   } finally {
     resetBtn()
   }
@@ -332,4 +332,4 @@ document.head.appendChild(style)
 document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeUploadModal() } })
 document.addEventListener('DOMContentLoaded', () => {
   console.log('Ready. Click ENTER.')
-})
+})// JavaScript Document
