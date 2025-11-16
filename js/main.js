@@ -178,7 +178,7 @@ async function loadGallery() {
       
       const desc = Object.assign(document.createElement('div'), { className: 'item-description' })
       // Affichage adapté (Nom du lieu, Prénom, Pays, Année)
-      desc.innerHTML = `<h3>${o.titre.toUpperCase()}</h3><p>${o.ville ? `? ${o.prenom}, ${o.ville}` : `? ${o.prenom}`}</p>${o.year ? `<p>${o.year}</p>` : ''}`
+     desc.innerHTML = `<h3>${o.titre.toUpperCase()}</h3><p>${o.ville ? `${o.prenom}, ${o.ville}` : `${o.prenom}`}</p>${o.year ? `<p>${o.year}</p>` : ''}`
       
       item.append(img, desc)
       gallery.appendChild(item)
