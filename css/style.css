@@ -544,8 +544,8 @@ font-weight:500;
     display: none;
 }
 .preview-container img {
-	width: 80px;
-    height: 80px;
+	width: 40px;
+    height: 40px;
     object-fit: cover;
     border-radius: 4px;
 }
@@ -631,7 +631,7 @@ font-weight:500;
     }
 	 /* Marge en bas pour la dernière image en mode 1 colonne */
     .grid[data-columns="1"] .grid-item:last-child {
-        margin-bottom: 20px;
+        margin-bottom: 30px;
     }
 }
 
@@ -649,7 +649,11 @@ font-weight:500;
 	.grid[data-columns="1"] .grid-item img {
     max-height: 50vh;
     object-fit: contain;
-}
+    }
+	
+	#year {
+        margin-bottom: 60px; /* Espace après le champ Year */
+    }
     
     .top-bar {
         height: 50px;
@@ -669,7 +673,7 @@ font-weight:500;
         padding-left: 0;
         padding-top: 40px;
     }
-		/* Marge en bas pour la dernière image en mode 1 colonne */
+		/* Marge en bas pour la dernière image en mode 1 colonne*/ 
     .grid[data-columns="1"] .grid-item:last-child {
         margin-bottom: 90px;
 }
@@ -716,6 +720,9 @@ font-weight:500;
         font-size: 12px;
         margin-bottom: 20px;
     }
+	#year {
+        margin-bottom: 60px; /* Espace après le champ Year */
+    }
 }
 
 /* MOBILE PETIT (iPhone SE, petits Android) */
@@ -741,6 +748,9 @@ font-weight:500;
         padding: 12px 30px;
         font-size: 11px;
     }
+	#year {
+        margin-bottom: 60px; /* Espace après le champ Year */
+    }
 }
 
 /* iPad PORTRAIT spécifique */
@@ -762,6 +772,9 @@ font-weight:500;
     max-height: 50vh;
     object-fit: contain;
 }
+	#year {
+        margin-bottom: 60px; /* Espace après le champ Year */
+    }
 }
 
 /* iPad LANDSCAPE spécifique */
@@ -778,5 +791,9 @@ font-weight:500;
 		/* Marge en bas pour la dernière image en mode 1 colonne */
     .grid[data-columns="1"] .grid-item:last-child {
         margin-bottom: 0;
+    }
+	
+	#year {
+        margin-bottom: 60px; /* Espace après le champ Year */
     }
 }
